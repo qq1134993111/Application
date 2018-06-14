@@ -12,28 +12,32 @@ namespace boost
 	}
 }
 
-
-class SingletonProcess
+namespace general
 {
-public:
-	SingletonProcess(const std::string& file_path);
 
-	~SingletonProcess();
-
-	enum class LockResult :int32_t
+	class SingletonProcess
 	{
-		kSuccess,
-		kAlreadyLock,
-		kCreateFileError,
-		kFailure
+	public:
+		SingletonProcess(const std::string& file_path);
+
+		~SingletonProcess();
+
+		enum class LockResult :int32_t
+		{
+			kSuccess,
+			kAlreadyLock,
+			kCreateFileError,
+			kFailure
+		};
+
+
+		int32_t Lock();
+
+	private:
+		std::string	file_path_;
+		bool	is_locked_;
+		std::unique_ptr<boost::interprocess::file_lock> file_lock_;
+		std::ofstream	pid_file_stream_;
 	};
 
-
-	int32_t Lock();
-
-private:
-	std::string	file_path_;
-	bool	is_locked_;
-	std::unique_ptr<boost::interprocess::file_lock> file_lock_;
-	std::ofstream	pid_file_stream_;
-};
+}

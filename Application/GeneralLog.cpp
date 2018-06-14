@@ -1,21 +1,21 @@
-#include "Log.h"
+#include "GeneralLog.h"
 #include <boost/filesystem.hpp>
 namespace general
 {
-	bool Log::s_use_console_logger = false;
-	std::shared_ptr<spdlog::logger> Log::s_logger = nullptr;
-	std::shared_ptr<spdlog::logger> Log::s_console = nullptr;
+	std::shared_ptr<spdlog::logger> GeneralLog::s_logger = nullptr;
+	std::shared_ptr<spdlog::logger> GeneralLog::s_console = nullptr;
 
 
-	int32_t Log::Init(const Property& prop)
+	int32_t GeneralLog::Init(const Property& prop)
 	{
 		if (s_logger == nullptr)
 		{
-			auto logger_name = prop.GetValue(log_config_key::kLoggerName, log_config_key::default_value::kLoggerNameValue);
+
 			auto logger_file_name = prop.GetValue(log_config_key::kLoggerFilename, log_config_key::default_value::kLoggerFilenameValue);
 
+
 			boost::filesystem::path path(logger_file_name);
-			if (path.has_parent_path() && boost::filesystem::exists(path.parent_path()))
+			if (!boost::filesystem::exists(path.parent_path()))
 			{
 				//boost::system::error_code ec;
 				if (!boost::filesystem::create_directories(path.parent_path()))
@@ -23,6 +23,9 @@ namespace general
 					return static_cast<int32_t>(ErrorCode::CreateLoggerDirectoriesFailed);
 				}
 			}
+
+			auto logger_name = prop.GetValue(log_config_key::kLoggerName, path.stem().string());
+
 
 			std::unordered_map<uint8_t,
 				std::function<std::shared_ptr<spdlog::logger>(const std::string& logger_name, const spdlog::filename_t& filename, bool truncate)>
@@ -84,11 +87,30 @@ namespace general
 					{ static_cast<uint8_t>(log_config_key::LoggerThreadMode::kLoggerMt),spdlog::stdout_color_mt }
 				};
 
-				s_logger = stdout_logger_map[logger_thread_mode]("console");
+				s_console = stdout_logger_map[logger_thread_mode]("console");
 			}
 
 			spdlog::set_pattern(prop.GetValue(log_config_key::kLoggerPattern, log_config_key::default_value::kLoggerPatternValue));
 
+			if (prop.GetValue(log_config_key::kAsyncMode, log_config_key::default_value::kAsyncModeValue))
+			{
+				spdlog::set_async_mode(prop.GetValue(log_config_key::kAsyncQueueSize, log_config_key::default_value::kAsyncQueueSizeValue));
+			}
+			else
+			{
+				spdlog::set_sync_mode();
+			}
+
+			std::string log_level = prop.GetValue(log_config_key::kLoggerLevel, log_config_key::default_value::kLoggerLevelValue);
+			auto level = spdlog::level::from_str(log_level);
+			if (level == spdlog::level::off)
+			{
+				spdlog::set_level(spdlog::level::trace);
+			}
+			else
+			{
+				spdlog::set_level(level);
+			}
 
 			return static_cast<int32_t>(ErrorCode::kSuccess);
 		}

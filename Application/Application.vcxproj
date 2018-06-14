@@ -90,6 +90,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\DEV\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -149,13 +150,13 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="GeneralApplication.cpp" />
-    <ClCompile Include="Log.cpp" />
+    <ClCompile Include="GeneralLog.cpp" />
     <ClCompile Include="SingletonProcess.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CPreDefined.h" />
     <ClInclude Include="GeneralApplication.h" />
-    <ClInclude Include="Log.h" />
+    <ClInclude Include="GeneralLog.h" />
     <ClInclude Include="Property.h" />
     <ClInclude Include="SingletonProcess.h" />
   </ItemGroup>

@@ -24,7 +24,7 @@
     <ClCompile Include="GeneralApplication.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Log.cpp">
+    <ClCompile Include="GeneralLog.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,10 +38,10 @@
     <ClInclude Include="CPreDefined.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Log.h">
+    <ClInclude Include="Property.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Property.h">
+    <ClInclude Include="GeneralLog.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
