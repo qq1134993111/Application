@@ -85,6 +85,7 @@ namespace general
 				("help,h", "show this information")
 				("daemon,d", "launch application as a daemon process")
 				("singleton,s", "enable singleton file lock")
+				("name,n", boost::program_options::value<std::string>(&app_name_)->default_value(default_app_name), "set the application name,default exe name")
 				("log-dir", boost::program_options::value<std::string>()->default_value(exe_file_path_ + boost::filesystem::path("/").make_preferred().string() + "log"), "set the application log directory path,default ./log path")
 				("log-level,l", boost::program_options::value<std::string>()->default_value("info"), "set the application log level,[trace,debug, info, warning, error,critical,off],default info")
 				("log-to-console", "enable log to console")
@@ -131,7 +132,7 @@ namespace general
 				return static_cast<int32_t>(ErrorCode::kSuccess);
 			});
 
-			AddOptionWithCallback<bool>("basic-truncate", "basic log Whether to truncate the original file.defualt false", false,
+			AddOptionWithCallback<bool>("basic-truncate", "basic log whether to truncate the original file.defualt false", false,
 				[&](const std::string& option_name, const bool& value)
 			{
 
@@ -139,7 +140,7 @@ namespace general
 				return static_cast<int32_t>(ErrorCode::kSuccess);
 			});
 
-			auto fun_Rotate_set = [&](const std::string& option_name, const uint32_t& value)
+			auto fun_rotate_set = [&](const std::string& option_name, const uint32_t& value)
 			{
 				if (option_name == "rotating-max-file-size")
 				{
@@ -151,23 +152,25 @@ namespace general
 				}
 				return static_cast<int32_t>(ErrorCode::kSuccess);
 			};
-			AddOptionWithCallback<uint32_t>("rotating-max-file-size", "rotating log max file size,default 1G bytes", fun_Rotate_set);
-			AddOptionWithCallback<uint32_t>("rotating-max-files", "rotating log max files,default 10 files", fun_Rotate_set);
+			AddOptionWithCallback<uint32_t>("rotating-max-file-size", "rotating log max file size,default 1G bytes", fun_rotate_set);
+			AddOptionWithCallback<uint32_t>("rotating-max-files", "rotating log max files,default 10 files", fun_rotate_set);
 
-			auto fun_daily_set = [&](const std::string& option_name, const uint32_t& value)
+			auto fun_daily_set = [&](const std::string& option_name, const std::string& value)
 			{
-				if (option_name == "daily_hour")
+				std::vector<std::string> splits;
+				boost::algorithm::split(splits, value, boost::algorithm::is_any_of(":"), boost::algorithm::token_compress_on);
+				if (splits.size() != 2)
 				{
-					log_prop_(log_config_key::kDailyHour, value);
+					return static_cast<int32_t>(ErrorCode::kFailure);
 				}
-				else if (option_name == "daily_minute")
-				{
-					log_prop_(log_config_key::kDailyMinute, value);
-				}
+
+				log_prop_(log_config_key::kDailyHour, boost::lexical_cast<int32_t>(splits[0]));
+				log_prop_(log_config_key::kDailyMinute, boost::lexical_cast<int32_t>(splits[1]));
+
 				return static_cast<int32_t>(ErrorCode::kSuccess);
 			};
-			AddOptionWithCallback<uint32_t>("daily_hour", "daily log hour,default 1", fun_daily_set);
-			AddOptionWithCallback<uint32_t>("daily_minute", "daily log minute,default 0", fun_daily_set);
+			AddOptionWithCallback<std::string>("daily_time", "daily log will create a new log file each day on HH:mm,default 00:00", "00:00", fun_daily_set);
+
 
 			//AddOptionWithCallback<std::string>("log-pattern", "log pattern", "*** [%Y-%m-%d %H:%M:%S,%f] %v ***",
 			//	[&](const std::string& option_name, const std::string& value)->int32_t
@@ -176,7 +179,7 @@ namespace general
 			//	return static_cast<int32_t>(ErrorCode::kSuccess);
 			//});
 
-			AddOptionWithArgument<std::string>("name,n", "set the application name,default exe name", default_app_name, &app_name_);
+			//AddOptionWithArgument<std::string>("name,n", "set the application name,default exe name", default_app_name, &app_name_);
 
 			SetProgramOption();
 			if (!ParseProgramOption())
@@ -220,10 +223,10 @@ namespace general
 				{
 					LOG_ERROR("daemon failed,{0}:{1}", errno, strerror(errno));
 					return;
-				}
+		}
 #elif defined(C_SYSTEM_WINDOWS)
 #endif
-			}
+	}
 
 			if (OnDaemonizeEnd() != static_cast<int32_t>(ErrorCode::kSuccess))
 			{
@@ -298,7 +301,7 @@ namespace general
 				LOG_ERROR("application throw exception in <OnExit> :{0}", boost::current_exception_diagnostic_information());
 			}
 
-		}
+}
 		catch (...)
 		{
 			//
@@ -370,7 +373,7 @@ namespace general
 		{
 			LOG_ERROR("sigaction on SIGUSR2  failed,error:{0},error string:{1}", error, strerror(error));
 			return false;
-			}
+		}
 
 		return true;
 
@@ -477,6 +480,6 @@ namespace general
 		open("/dev/null", O_RDWR);
 #elif defined(C_SYSTEM_WINDOWS)
 #endif
-	}
+		}
 
 		}
