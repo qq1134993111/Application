@@ -32,7 +32,7 @@ namespace general
 			if (path.empty())
 			{
 
-				path = exe_file_path_;
+				path = exe_file_path_ + boost::filesystem::path("/").make_preferred().string() + "lock";
 
 			}
 
@@ -85,12 +85,16 @@ namespace general
 				("help,h", "show this information")
 				("daemon,d", "launch application as a daemon process")
 				("singleton,s", "enable singleton file lock")
-				("log-dir", boost::program_options::value<std::string>()->default_value(exe_file_path_ + "/log"), "set the application log directory path,default ./log path")
+				("log-dir", boost::program_options::value<std::string>()->default_value(exe_file_path_ + boost::filesystem::path("/").make_preferred().string() + "log"), "set the application log directory path,default ./log path")
 				("log-level,l", boost::program_options::value<std::string>()->default_value("info"), "set the application log level,[trace,debug, info, warning, error,critical,off],default info")
 				("log-to-console", "enable log to console")
 				;
 
-			AddOptionWithArgument<std::string>("name,n", "set the application name,default exe name", default_app_name, &app_name_);
+			AddOptionWithCallback("log-mt", "enable multithread log", [&](const std::string& option_name)->int32_t
+			{
+				log_prop_.SetValue(log_config_key::kLoggerThreadMode, static_cast<uint8_t>(log_config_key::LoggerThreadMode::kLoggerMt));
+				return static_cast<int32_t>(ErrorCode::kSuccess);
+			});
 
 			AddOptionWithCallback("log-async", "enable async log", [&](const std::string& option_name)->int32_t {
 
@@ -98,7 +102,7 @@ namespace general
 				return static_cast<int32_t>(ErrorCode::kSuccess);
 			});
 
-			AddOptionWithCallback<uint32_t>("log-async-queue-size", "async log queue size", 8096, [&](const std::string& option_name, uint32_t size)->int32_t
+			AddOptionWithCallback<uint32_t>("log-async-queue-size", "async log queue size,default 8192", 8192, [&](const std::string& option_name, uint32_t size)->int32_t
 			{
 				log_prop_(log_config_key::kAsyncQueueSize, size);
 				return static_cast<int32_t>(ErrorCode::kSuccess);
@@ -106,10 +110,73 @@ namespace general
 
 			AddOptionWithCallback<std::string>("log-type,t", "log type,[basic,rotating,daily],defualt basic", "basic", [&](const std::string& option_name, const std::string& value)->int32_t
 			{
+				std::unordered_map<std::string, uint8_t> umap
+				{
+					{"basic",static_cast<uint8_t>(log_config_key::LoggerType::kLoggerTypeBasic)},
+					{ "rotating",static_cast<uint8_t>(log_config_key::LoggerType::kLoggerTypeRotating) },
+					{ "daily",static_cast<uint8_t>(log_config_key::LoggerType::kLoggerTypeDaily) }
+				};
+
+				auto level = boost::algorithm::to_lower_copy(value);
+
+				auto it = umap.find(level);
+				if (it == umap.end())
+				{
+
+					return  static_cast<int32_t>(ErrorCode::kFailure);
+				}
+
+				log_prop_.SetValue(log_config_key::kLoggerType, it->second);
 
 				return static_cast<int32_t>(ErrorCode::kSuccess);
 			});
 
+			AddOptionWithCallback<bool>("basic-truncate", "basic log Whether to truncate the original file.defualt false", false,
+				[&](const std::string& option_name, const bool& value)
+			{
+
+				log_prop_(log_config_key::kBasicTruncate, value);
+				return static_cast<int32_t>(ErrorCode::kSuccess);
+			});
+
+			auto fun_Rotate_set = [&](const std::string& option_name, const uint32_t& value)
+			{
+				if (option_name == "rotating-max-file-size")
+				{
+					log_prop_(log_config_key::kRotatingMaxFileSize, value);
+				}
+				else if (option_name == "rotating-max-files")
+				{
+					log_prop_(log_config_key::kRotatingMaxFiles, value);
+				}
+				return static_cast<int32_t>(ErrorCode::kSuccess);
+			};
+			AddOptionWithCallback<uint32_t>("rotating-max-file-size", "rotating log max file size,default 1G bytes", fun_Rotate_set);
+			AddOptionWithCallback<uint32_t>("rotating-max-files", "rotating log max files,default 10 files", fun_Rotate_set);
+
+			auto fun_daily_set = [&](const std::string& option_name, const uint32_t& value)
+			{
+				if (option_name == "daily_hour")
+				{
+					log_prop_(log_config_key::kDailyHour, value);
+				}
+				else if (option_name == "daily_minute")
+				{
+					log_prop_(log_config_key::kDailyMinute, value);
+				}
+				return static_cast<int32_t>(ErrorCode::kSuccess);
+			};
+			AddOptionWithCallback<uint32_t>("daily_hour", "daily log hour,default 1", fun_daily_set);
+			AddOptionWithCallback<uint32_t>("daily_minute", "daily log minute,default 0", fun_daily_set);
+
+			//AddOptionWithCallback<std::string>("log-pattern", "log pattern", "*** [%Y-%m-%d %H:%M:%S,%f] %v ***",
+			//	[&](const std::string& option_name, const std::string& value)->int32_t
+			//{
+			//	log_prop_(log_config_key::kLoggerPattern, value);
+			//	return static_cast<int32_t>(ErrorCode::kSuccess);
+			//});
+
+			AddOptionWithArgument<std::string>("name,n", "set the application name,default exe name", default_app_name, &app_name_);
 
 			SetProgramOption();
 			if (!ParseProgramOption())
