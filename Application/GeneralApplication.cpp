@@ -186,7 +186,10 @@ namespace general
 				return;
 
 			if (OnParseProgramOptionEnd() != static_cast<int32_t>(ErrorCode::kSuccess))
+			{
+				std::cout << "OnParseProgramOptionEnd not return kSuccess" << std::endl;
 				return;
+			}
 
 
 			OnLogInit(log_prop_);
@@ -244,7 +247,7 @@ namespace general
 			{
 				LOG_ERROR("install signal handler failed");
 				return;
-			}
+}
 #elif defined(C_SYSTEM_WINDOWS)
 #endif
 
@@ -301,11 +304,11 @@ namespace general
 				LOG_ERROR("application throw exception in <OnExit> :{0}", boost::current_exception_diagnostic_information());
 			}
 
-}
+		}
 		catch (...)
 		{
-			//
-			//boost::current_exception_diagnostic_information();
+			std::cout << "application throw exception in <Run> :" << boost::current_exception_diagnostic_information() << std::endl;
+
 			LOG_ERROR("application throw exception in <Run> :{0}", boost::current_exception_diagnostic_information());
 
 			try
@@ -480,6 +483,6 @@ namespace general
 		open("/dev/null", O_RDWR);
 #elif defined(C_SYSTEM_WINDOWS)
 #endif
-		}
+	}
 
-		}
+}
