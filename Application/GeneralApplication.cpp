@@ -32,7 +32,7 @@ namespace general
 			if (path.empty())
 			{
 
-				path = exe_file_path_ + boost::filesystem::path("/").make_preferred().string() + "lock";
+				path = exe_file_path_;
 
 			}
 
@@ -207,7 +207,7 @@ namespace general
 
 				if (boost::filesystem::is_directory(lock_dir_path))
 				{
-					file_path += boost::filesystem::path("/").make_preferred().string() + GetAppLicationName();
+					file_path += boost::filesystem::path("/lock/").make_preferred().string() + GetAppLicationName();
 				}
 
 				singleton_process_.reset(new SingletonProcess(file_path));
@@ -427,7 +427,7 @@ namespace general
 		auto log_dir = GetOptionArgumentOptional<std::string>("log-dir");
 		if (log_dir)
 		{
-			log_prop_.SetValue(log_config_key::kLoggerFilename, *log_dir + "/" + GetAppLicationName());
+			log_prop_.SetValue(log_config_key::kLoggerFilename, *log_dir + "/" + GetAppLicationName()+".log");
 		}
 
 		auto log_level = GetOptionArgumentOptional<std::string>("log-level");
