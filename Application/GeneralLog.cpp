@@ -103,14 +103,8 @@ namespace general
 
 			std::string log_level = prop.GetValue(log_config_key::kLoggerLevel, log_config_key::default_value::kLoggerLevelValue);
 			auto level = spdlog::level::from_str(log_level);
-			if (level == spdlog::level::off)
-			{
-				spdlog::set_level(spdlog::level::trace);
-			}
-			else
-			{
-				spdlog::set_level(level);
-			}
+			spdlog::set_level(level);
+			
 
 			return static_cast<int32_t>(ErrorCode::kSuccess);
 		}

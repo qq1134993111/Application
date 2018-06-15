@@ -226,10 +226,10 @@ namespace general
 				{
 					LOG_ERROR("daemon failed,{0}:{1}", errno, strerror(errno));
 					return;
-		}
+				}
 #elif defined(C_SYSTEM_WINDOWS)
 #endif
-	}
+			}
 
 			if (OnDaemonizeEnd() != static_cast<int32_t>(ErrorCode::kSuccess))
 			{
@@ -247,7 +247,7 @@ namespace general
 			{
 				LOG_ERROR("install signal handler failed");
 				return;
-}
+			}
 #elif defined(C_SYSTEM_WINDOWS)
 #endif
 
@@ -427,7 +427,7 @@ namespace general
 		auto log_dir = GetOptionArgumentOptional<std::string>("log-dir");
 		if (log_dir)
 		{
-			log_prop_.SetValue(log_config_key::kLoggerFilename, *log_dir + "/" + GetAppLicationName()+".log");
+			log_prop_.SetValue(log_config_key::kLoggerFilename, *log_dir + "/" + GetAppLicationName() + ".log");
 		}
 
 		auto log_level = GetOptionArgumentOptional<std::string>("log-level");
