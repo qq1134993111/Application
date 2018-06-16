@@ -229,7 +229,7 @@ namespace general
 					log_prop_(log_config_key::kRotatingMaxFiles, value);
 				}
 				return static_cast<int32_t>(ErrorCode::kSuccess);
-				};
+			};
 			AddOptionWithCallback<uint32_t>("rotating-max-file-size", "rotating log max file size,default 1G bytes", fun_rotate_set);
 			AddOptionWithCallback<uint32_t>("rotating-max-files", "rotating log max files,default 10 files", fun_rotate_set);
 
@@ -384,7 +384,7 @@ namespace general
 				LOG_ERROR("application throw exception in <OnExit> :{0}", boost::current_exception_diagnostic_information());
 			}
 
-			}
+		}
 		catch (...)
 		{
 			std::cout << "application throw exception in <Run> :" << boost::current_exception_diagnostic_information() << std::endl;
@@ -400,7 +400,7 @@ namespace general
 				LOG_ERROR("application throw exception in <OnExit> :{0}", boost::current_exception_diagnostic_information());
 			}
 		}
-			}
+	}
 
 	std::string GeneralApplication::GetLongOptionName(const std::string& option_name)
 	{
@@ -486,10 +486,10 @@ namespace general
 			{
 				OnProgramOption(option_name);
 			}
-				}
+		}
 
 		return true;
-			}
+	}
 
 	void GeneralApplication::RedirectInputOutput()
 	{
@@ -504,4 +504,4 @@ namespace general
 #endif
 	}
 
-		}
+}
