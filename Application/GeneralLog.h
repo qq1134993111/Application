@@ -41,7 +41,7 @@ namespace general
 		{
 
 			const spdlog::filename_t kLoggerFilenameValue("./log/general_log.log");
-			const std::string kLoggerPatternValue("*** [%Y-%m-%d %H:%M:%S,%f] %v ***");
+			const std::string kLoggerPatternValue("[%Y-%m-%d %H:%M:%S.%f] [%P,%t] [%l]  %v ");
 			const bool kUseConsoleLoggerValue(true);
 			const uint8_t kLoggerThreadModeValue = static_cast<uint8_t>(LoggerThreadMode::kLoggerSt);
 			const uint8_t kLoggerTypeValue = static_cast<uint8_t>(LoggerType::kLoggerTypeBasic);
@@ -198,6 +198,9 @@ namespace general
 
 }
 
+#define GENERAL_LOG_STR_H(x) #x
+#define GENERAL_LOG_STR_HELPER(x) GENERAL_LOG_STR_H(x)
+
 #define LOG_INIT(prop) general::GeneralLog::Init(prop)
 #define LOG_SET_LEVEL(l) general::GeneralLog::SetLevel(l)
 #define LOG_FLUSH_ON(l)  general::GeneralLog::FlushOn(l)
@@ -207,8 +210,8 @@ namespace general
 worker_warmup_cb,flush_interval_ms,worker_teardown_cb)\
 general::GeneralLog::SetASyncMode(queue_size,overflow_policy,worker_warmup_cb,flush_interval_ms,worker_teardown_cb)
 #define LOG_SET_ERROR_HANDLE(cb) general::GeneralLog::SetErrorHandler(cb)
-#define LOG_TRECE(...) general::GeneralLog::Trace(__VA_ARGS__"[ " __FUNCTION__  "][" __FILE__ "(" SPDLOG_STR_HELPER(__LINE__) ") ] ")
-#define LOG_DEBUG(...) general::GeneralLog::Debug(__VA_ARGS__"[ " __FUNCTION__  "][" __FILE__ "(" SPDLOG_STR_HELPER(__LINE__) ") ] ")
+#define LOG_TRECE(...) general::GeneralLog::Trace(__VA_ARGS__" ["  "][" __FILE__ "(" GENERAL_LOG_STR_HELPER(__LINE__) ")]" )
+#define LOG_DEBUG(...) general::GeneralLog::Debug(__VA_ARGS__" ["  "][" __FILE__ "(" GENERAL_LOG_STR_HELPER(__LINE__) ")]" )
 #define LOG_INFO(...) general::GeneralLog::Info(__VA_ARGS__)
 #define LOG_WARN(...) general::GeneralLog::Warn(__VA_ARGS__)
 #define LOG_ERROR(...) general::GeneralLog::Error(__VA_ARGS__)
