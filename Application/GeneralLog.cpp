@@ -5,7 +5,6 @@ namespace general
 	std::shared_ptr<spdlog::logger> GeneralLog::s_logger = nullptr;
 	std::shared_ptr<spdlog::logger> GeneralLog::s_console = nullptr;
 
-
 	int32_t GeneralLog::Init(const Property& prop)
 	{
 		if (s_logger == nullptr)
@@ -104,7 +103,7 @@ namespace general
 			std::string log_level = prop.GetValue(log_config_key::kLoggerLevel, log_config_key::default_value::kLoggerLevelValue);
 			auto level = spdlog::level::from_str(log_level);
 			spdlog::set_level(level);
-			
+
 
 			return static_cast<int32_t>(ErrorCode::kSuccess);
 		}

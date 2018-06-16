@@ -3,7 +3,7 @@
 #include <unordered_map>
 
 #include <spdlog/spdlog.h>
-#include "property.h"
+#include "Property.h"
 
 namespace general
 {
@@ -58,7 +58,7 @@ namespace general
 	}
 
 
-
+	//日志
 	class GeneralLog
 	{
 	public:
@@ -77,11 +77,11 @@ namespace general
 			spdlog::set_level(log_level);
 		}
 
-		static inline void FlushOn(spdlog::level::level_enum log_level)
+		static inline void FlushOn(spdlog::level::level_enum log_level= spdlog::level::trace)
 		{
 			spdlog::flush_on(log_level);
 		}
-
+		
 		static inline void SetSyncMode()
 		{
 			spdlog::set_sync_mode();
@@ -201,6 +201,7 @@ namespace general
 #define LOG_INIT(prop) general::GeneralLog::Init(prop)
 #define LOG_SET_LEVEL(l) general::GeneralLog::SetLevel(l)
 #define LOG_FLUSH_ON(l)  general::GeneralLog::FlushOn(l)
+#define LOG_FLUSH_ON_ALL()  general::GeneralLog::FlushOn()
 #define LOG_SET_SYNC_MODE()  general::GeneralLog::SetSyncMode()
 #define LOG_SET_ASYNC_MODE(queue_size,overflow_policy,\
 worker_warmup_cb,flush_interval_ms,worker_teardown_cb)\

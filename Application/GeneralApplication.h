@@ -9,9 +9,11 @@
 #include <memory>
 #include <atomic>
 
-#if defined(C_SYSTEM_LINUX)
+#include "CPreDefined.h"
+
+#if defined(C_SYSTEM_GNU_LINUX)
 #include <errno.h>
-#include <stdlib.h>
+#include <signal.h>
 #elif defined(C_SYSTEM_WINDOWS) 
 //#include <signal.h>
 #endif 
@@ -20,7 +22,7 @@
 #include <boost/optional.hpp>
 #include <boost/exception/diagnostic_information.hpp>
 
-#include "CPreDefined.h"
+
 
 #include "GeneralLog.h"
 
@@ -216,7 +218,7 @@ namespace general
 		}
 
 	private:
-#if defined(C_SYSTEM_LINUX) 
+#if defined(C_SYSTEM_GNU_LINUX) 
 		static void SignalHandler(int sig_num, siginfo_t* sig_info, void* ptr);
 		static bool InstalSignalHandler();
 #elif defined(C_SYSTEM_WINDOWS)

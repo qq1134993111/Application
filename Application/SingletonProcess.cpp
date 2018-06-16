@@ -37,7 +37,7 @@ namespace general
 
 			if (!boost::filesystem::exists(dir_path))
 			{
-				if (boost::filesystem::create_directory(dir_path))
+				if (!boost::filesystem::create_directory(dir_path))
 				{
 					return (int32_t)LockResult::kCreateFileError;
 				}

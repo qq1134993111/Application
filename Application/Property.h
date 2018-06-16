@@ -1,4 +1,6 @@
-#pragma once
+//#pragma once
+#ifndef _GENERAL_PROPERTY_
+#define _GENERAL_PROPERTY_
 
 #include<unordered_map>
 #include<string>
@@ -35,6 +37,10 @@ namespace general
 				std::is_same<uint32_t, U>::value ||
 				std::is_same<int64_t, U>::value ||
 				std::is_same<uint64_t, U>::value ||
+				std::is_same<unsigned int, U>::value ||
+				std::is_same<int, U>::value ||
+				std::is_same<unsigned long, U>::value ||
+				std::is_same<long, U>::value ||
 				std::is_same<float, U>::value ||
 				std::is_same<double, U>::value),
 			PropertyT&>::type
@@ -56,7 +62,11 @@ namespace general
 			std::is_same<int32_t, U>::value ||
 			std::is_same<uint32_t, U>::value ||
 			std::is_same<int64_t, U>::value ||
-			std::is_same<uint64_t, U>::value,
+			std::is_same<uint64_t, U>::value ||
+			std::is_same<unsigned int, U>::value ||
+			std::is_same<int, U>::value ||
+			std::is_same<unsigned long, U>::value ||
+			std::is_same<long, U>::value,
 			PropertyT>::type
 			SetValue(const T& key, const U& value)
 		{
@@ -97,6 +107,10 @@ namespace general
 				std::is_same<uint32_t, U>::value ||
 				std::is_same<int64_t, U>::value ||
 				std::is_same<uint64_t, U>::value ||
+				std::is_same<unsigned int, U>::value ||
+				std::is_same<int, U>::value ||
+				std::is_same<unsigned long, U>::value ||
+				std::is_same<long, U>::value ||
 				std::is_same<float, U>::value ||
 				std::is_same<double, U>::value),
 			boost::optional<U>>
@@ -134,7 +148,11 @@ namespace general
 			std::is_same<int32_t, U>::value ||
 			std::is_same<uint32_t, U>::value ||
 			std::is_same<int64_t, U>::value ||
-			std::is_same<uint64_t, U>::value,
+			std::is_same<uint64_t, U>::value ||
+			std::is_same<unsigned int, U>::value ||
+			std::is_same<int, U>::value ||
+			std::is_same<unsigned long, U>::value ||
+			std::is_same<long, U>::value,
 			boost::optional<U>>
 			::type
 			GetValue(const T& key) const
@@ -240,13 +258,13 @@ namespace general
 		template<typename U>
 		boost::optional<U> GetValue(uint32_t key) const
 		{
-			return prop_i_.GetValue(key);
+			return prop_i_.GetValue<U>(key);
 		}
 
 		template<typename U>
 		boost::optional<U> GetValue(const std::string& key) const
 		{
-			return prop_s_.GetValue(key);
+			return prop_s_.GetValue<U>(key);
 		}
 
 		void Clear()
@@ -262,3 +280,5 @@ namespace general
 
 
 }
+
+#endif

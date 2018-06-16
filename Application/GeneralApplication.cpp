@@ -8,9 +8,86 @@
 #include "SingletonProcess.h"
 namespace general
 {
+	//通用应用程序基类
 	static GeneralApplication* g_app_instance = nullptr;
 	static volatile bool g_is_signal_to_exit = false;
 
+#if defined(C_SYSTEM_GNU_LINUX)
+	void GeneralApplication::SignalHandler(int sig_num, siginfo_t* sig_info, void* ptr)
+	{
+		if (g_app_instance == nullptr)
+			return;
+
+		if (sig_num == SIGUSR1)
+		{
+			if (sig_info != nullptr)
+			{
+				switch (sig_info->si_int)
+				{
+				case -1:
+				{
+					g_is_signal_to_exit = true;
+				}
+				break;
+				case spdlog::level::trace:
+				case spdlog::level::debug:
+				case spdlog::level::info:
+				case spdlog::level::warn:
+				case spdlog::level::err:
+				case spdlog::level::critical:
+				{
+					//1-6
+					LOG_SET_LEVEL(static_cast<spdlog::level::level_enum>(sig_info->si_int));
+				}
+				break;
+
+				default:
+					break;
+				}
+			}
+		}
+
+		g_app_instance->OnSignal(sig_num, sig_info->si_int);
+	}
+
+	bool GeneralApplication::InstalSignalHandler()
+	{
+		if (signal(SIGPIPE, SIG_IGN) == SIG_ERR)
+		{
+			LOG_ERROR("ignore signal SIGPIPE failed");
+			return false;
+		}
+		if (signal(SIGHUP, SIG_IGN) == SIG_ERR)
+		{
+			LOG_ERROR("ignore signal SIGHUB failed");
+			return false;
+		}
+		struct  sigaction sig_action;
+		sig_action.sa_handler = nullptr;
+		sig_action.sa_sigaction = &GeneralApplication::SignalHandler;
+		sig_action.sa_flags = SA_RESTART | SA_SIGINFO;
+		sigemptyset(&sig_action.sa_mask);
+		sig_action.sa_restorer = nullptr;
+
+		int ret = sigaction(SIGUSR1, &sig_action, nullptr);
+		if (ret != 0)
+		{
+			LOG_ERROR("sigaction on SIGUSR1  failed,error:{0},error string:{1}", errno, strerror(errno));
+			return false;
+		}
+
+		ret = sigaction(SIGUSR2, &sig_action, nullptr);
+		if (ret != 0)
+		{
+			LOG_ERROR("sigaction on SIGUSR2  failed,error:{0},error string:{1}", errno, strerror(errno));
+			return false;
+		}
+
+		return true;
+	}
+
+#elif defined(C_SYSTEM_WINDOWS)
+#endif
 	GeneralApplication::GeneralApplication() :options_desc_("Allowed options", 120)
 	{
 		is_running_ = false;
@@ -67,6 +144,7 @@ namespace general
 		{
 			std::cout << "application exit" << std::endl;
 			LOG_INFO("application exit");
+			LOG_FLUSH_ON_ALL();
 		});
 
 		(void)on_exit;
@@ -151,7 +229,7 @@ namespace general
 					log_prop_(log_config_key::kRotatingMaxFiles, value);
 				}
 				return static_cast<int32_t>(ErrorCode::kSuccess);
-			};
+				};
 			AddOptionWithCallback<uint32_t>("rotating-max-file-size", "rotating log max file size,default 1G bytes", fun_rotate_set);
 			AddOptionWithCallback<uint32_t>("rotating-max-files", "rotating log max files,default 10 files", fun_rotate_set);
 
@@ -262,6 +340,8 @@ namespace general
 				LOG_INFO("application init successfully");
 			}
 
+			LOG_FLUSH_ON_ALL();
+
 			int32_t ret = 0;
 			is_running_ = true;
 			while (is_running_)
@@ -304,7 +384,7 @@ namespace general
 				LOG_ERROR("application throw exception in <OnExit> :{0}", boost::current_exception_diagnostic_information());
 			}
 
-		}
+			}
 		catch (...)
 		{
 			std::cout << "application throw exception in <Run> :" << boost::current_exception_diagnostic_information() << std::endl;
@@ -320,68 +400,7 @@ namespace general
 				LOG_ERROR("application throw exception in <OnExit> :{0}", boost::current_exception_diagnostic_information());
 			}
 		}
-	}
-
-#if defined(C_SYSTEM_LINUX)
-	void GenericApplication::SignalHandler(int sig_num, siginfo_t* sig_info, void* ptr)
-	{
-		if (g_app_instance == nullptr)
-			return;
-		if (sig_num == SIGUSR1)
-		{
-			if (sig_info != nullptr)
-			{
-				switch (sig_info->si_int)
-				{
-				case 0:
-					g_is_signal_to_exit = true;
-
-				default:
-					break;
-				}
 			}
-		}
-
-		g_app_instance->OnSignal(sig_num, sig_info->sig_int);
-	}
-
-	bool GenericApplication::InstalSignalHandler()
-	{
-		if (signal(SIGPIPE, SIG_IGN) == SIG_ERR)
-		{
-			LOG_ERROR("ignore signal SIGPIPE failed");
-			return false;
-		}
-		if (signal(SIGHUB, SIG_IGM) == SIG_ERR)
-		{
-			LOG_ERROR("ignore signal SIGHUB failed");
-			return false;
-		}
-		struct  sigaction sig_action;
-		sig_action.sa_handler = nullptr;
-		sig_action.sa_sigaction = &GenericApplication::SignalHandler;
-		sig_action.sa_flags = SA_RESTART | SA_SIGINFO;
-		sigemptyset(&sig_action.sa_mask);
-		sig_action.sa_restorer = nullptr;
-
-		int ret = sigaction(SIGUSR1, &sig_action, nullptr);
-		if (ret != 0)
-		{
-			LOG_ERROR("sigaction on SIGUSR1  failed,error:{0},error string:{1}", error, strerror(error));
-			return false;
-		}
-
-		int ret = sigaction(SIGUSR2, &sig_action, nullptr);
-		if (ret != 0)
-		{
-			LOG_ERROR("sigaction on SIGUSR2  failed,error:{0},error string:{1}", error, strerror(error));
-			return false;
-		}
-
-		return true;
-
-#elif defined(C_SYSTEM_WINDOWS)
-#endif
 
 	std::string GeneralApplication::GetLongOptionName(const std::string& option_name)
 	{
@@ -467,10 +486,10 @@ namespace general
 			{
 				OnProgramOption(option_name);
 			}
-		}
+				}
 
 		return true;
-	}
+			}
 
 	void GeneralApplication::RedirectInputOutput()
 	{
@@ -485,4 +504,4 @@ namespace general
 #endif
 	}
 
-}
+		}
