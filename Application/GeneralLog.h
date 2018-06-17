@@ -210,7 +210,7 @@ namespace general
 worker_warmup_cb,flush_interval_ms,worker_teardown_cb)\
 general::GeneralLog::SetASyncMode(queue_size,overflow_policy,worker_warmup_cb,flush_interval_ms,worker_teardown_cb)
 #define LOG_SET_ERROR_HANDLE(cb) general::GeneralLog::SetErrorHandler(cb)
-#define LOG_TRECE(...) general::GeneralLog::Trace(__VA_ARGS__" ["  "][" __FILE__ "(" GENERAL_LOG_STR_HELPER(__LINE__) ")]" )
+#define LOG_TRACE(...) general::GeneralLog::Trace(__VA_ARGS__" ["  "][" __FILE__ "(" GENERAL_LOG_STR_HELPER(__LINE__) ")]" )
 #define LOG_DEBUG(...) general::GeneralLog::Debug(__VA_ARGS__" ["  "][" __FILE__ "(" GENERAL_LOG_STR_HELPER(__LINE__) ")]" )
 #define LOG_INFO(...) general::GeneralLog::Info(__VA_ARGS__)
 #define LOG_WARN(...) general::GeneralLog::Warn(__VA_ARGS__)
