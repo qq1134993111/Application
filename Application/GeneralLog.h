@@ -57,7 +57,6 @@ namespace general
 
 	}
 
-
 	//日志
 	class GeneralLog
 	{
@@ -72,22 +71,25 @@ namespace general
 
 	public:
 		static int32_t Init(const Property& prop);
+
 		static inline void SetLevel(spdlog::level::level_enum log_level)
 		{
 			spdlog::set_level(log_level);
 		}
 
-		static inline void FlushOn(spdlog::level::level_enum log_level= spdlog::level::trace)
+		static inline void FlushOn(spdlog::level::level_enum log_level = spdlog::level::trace)
 		{
 			spdlog::flush_on(log_level);
+
 		}
-		
+
 		static inline void SetSyncMode()
 		{
 			spdlog::set_sync_mode();
 		}
 
-		static inline void SetAsyncMode(size_t queue_size, const spdlog::async_overflow_policy overflow_policy = spdlog::async_overflow_policy::block_retry,
+		static inline void SetAsyncMode(size_t queue_size,
+			const spdlog::async_overflow_policy overflow_policy = spdlog::async_overflow_policy::block_retry,
 			const std::function<void()> &worker_warmup_cb = nullptr,
 			const std::chrono::milliseconds &flush_interval_ms = std::chrono::milliseconds::zero(),
 			const std::function<void()> &worker_teardown_cb = nullptr)
@@ -110,6 +112,34 @@ namespace general
 			if (s_logger)
 			{
 				s_logger->log(lvl, fmt, std::forward<Args>(args)...);
+			}
+		}
+
+		//多打印文件名/方法名/行号
+		template<typename... Args>
+		static void LogFFL(const char* func, const char* file, size_t line, spdlog::level::level_enum lvl, const char *fmt, Args &&... args)
+		{
+			static auto func_extract_name = [](const std::string& file)->std::string
+			{
+				std::string::size_type pos = file.find_last_of("/\\");
+				return (pos != std::string::npos) ? file.substr(pos + 1) : file;
+			};
+
+			if (s_logger)
+			{
+				if (lvl >= s_logger->level())
+				{
+					std::string msg = fmt::format(fmt, std::forward<Args>(args)...);
+					std::string ffl = fmt::format(" [{0}][{1}({2})]", func, func_extract_name(file), line);
+
+					s_logger->log(lvl, "{}{}", msg, ffl);
+
+					if (s_console)
+					{
+						s_console->log(lvl, "{}{}", msg, ffl);
+					}
+
+				}
 			}
 		}
 
@@ -201,18 +231,26 @@ namespace general
 #define GENERAL_LOG_STR_H(x) #x
 #define GENERAL_LOG_STR_HELPER(x) GENERAL_LOG_STR_H(x)
 
-#define LOG_INIT(prop) general::GeneralLog::Init(prop)
-#define LOG_SET_LEVEL(l) general::GeneralLog::SetLevel(l)
-#define LOG_FLUSH_ON(l)  general::GeneralLog::FlushOn(l)
-#define LOG_FLUSH_ON_ALL()  general::GeneralLog::FlushOn()
-#define LOG_SET_SYNC_MODE()  general::GeneralLog::SetSyncMode()
-#define LOG_SET_ASYNC_MODE(queue_size,overflow_policy,\
-worker_warmup_cb,flush_interval_ms,worker_teardown_cb)\
-general::GeneralLog::SetASyncMode(queue_size,overflow_policy,worker_warmup_cb,flush_interval_ms,worker_teardown_cb)
+#define LOG_INIT(prop)           general::GeneralLog::Init(prop)
+#define LOG_SET_LEVEL(l)         general::GeneralLog::SetLevel(l)
+#define LOG_FLUSH_ON(l)          general::GeneralLog::FlushOn(l)
+#define LOG_FLUSH_ON_ALL()       general::GeneralLog::FlushOn()
+#define LOG_SET_SYNC_MODE()      general::GeneralLog::SetSyncMode()
+#define LOG_SET_ASYNC_MODE(queue_size,overflow_policy,worker_warmup_cb,flush_interval_ms,worker_teardown_cb) general::GeneralLog::SetAsyncMode(queue_size,overflow_policy,worker_warmup_cb,flush_interval_ms,worker_teardown_cb)
 #define LOG_SET_ERROR_HANDLE(cb) general::GeneralLog::SetErrorHandler(cb)
-#define LOG_TRACE(...) general::GeneralLog::Trace(__VA_ARGS__" ["  "][" __FILE__ "(" GENERAL_LOG_STR_HELPER(__LINE__) ")]" )
-#define LOG_DEBUG(...) general::GeneralLog::Debug(__VA_ARGS__" ["  "][" __FILE__ "(" GENERAL_LOG_STR_HELPER(__LINE__) ")]" )
-#define LOG_INFO(...) general::GeneralLog::Info(__VA_ARGS__)
-#define LOG_WARN(...) general::GeneralLog::Warn(__VA_ARGS__)
-#define LOG_ERROR(...) general::GeneralLog::Error(__VA_ARGS__)
-#define LOG_CRITICAL(...) general::GeneralLog::Critical(__VA_ARGS__)
+
+//#define LOG_TRACE(...)     general::GeneralLog::Trace(__VA_ARGS__" ["  "][" __FILE__ "(" GENERAL_LOG_STR_HELPER(__LINE__) ")]" )
+//#define LOG_DEBUG(...)     general::GeneralLog::Debug(__VA_ARGS__" ["  "][" __FILE__ "(" GENERAL_LOG_STR_HELPER(__LINE__) ")]" )
+#define LOG_TRACE(...)       general::GeneralLog::Trace(__VA_ARGS__)
+#define LOG_DEBUG(...)       general::GeneralLog::Debug(__VA_ARGS__)
+#define LOG_INFO(...)        general::GeneralLog::Info(__VA_ARGS__)
+#define LOG_WARN(...)        general::GeneralLog::Warn(__VA_ARGS__)
+#define LOG_ERROR(...)       general::GeneralLog::Error(__VA_ARGS__)
+#define LOG_CRITICAL(...)    general::GeneralLog::Critical(__VA_ARGS__)
+
+#define LOG_TRACE_FFL(fmt,...)    general::GeneralLog::LogFFL(__FUNCTION__,__FILE__,__LINE__,spdlog::level::level_enum::trace,fmt,__VA_ARGS__)
+#define LOG_DEBUG_FFL(fmt,...)    general::GeneralLog::LogFFL(__FUNCTION__,__FILE__,__LINE__,spdlog::level::level_enum::debug,fmt,__VA_ARGS__)
+#define LOG_INFO_FFL(fmt,...)     general::GeneralLog::LogFFL(__FUNCTION__,__FILE__,__LINE__,spdlog::level::level_enum::info,fmt,__VA_ARGS__)
+#define LOG_WARN_FFL(fmt,...)     general::GeneralLog::LogFFL(__FUNCTION__,__FILE__,__LINE__,spdlog::level::level_enum::warn,fmt,__VA_ARGS__)
+#define LOG_ERROR_FFL(fmt,...)    general::GeneralLog::LogFFL(__FUNCTION__,__FILE__,__LINE__,spdlog::level::level_enum::err,fmt,__VA_ARGS__)
+#define LOG_CRITICAL_FFL(fmt,...) general::GeneralLog::LogFFL(__FUNCTION__,__FILE__,__LINE__,spdlog::level::level_enum::critical,fmt,__VA_ARGS__)
