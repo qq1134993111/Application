@@ -102,6 +102,11 @@ namespace general
 			spdlog::set_error_handler(handler);
 		}
 
+		static inline void DropAll()
+		{
+			spdlog::drop_all();
+		}
+
 		template<typename... Args>
 		static void Log(spdlog::level::level_enum lvl, const char *fmt, Args &&... args)
 		{
@@ -238,6 +243,7 @@ namespace general
 #define LOG_SET_SYNC_MODE()      general::GeneralLog::SetSyncMode()
 #define LOG_SET_ASYNC_MODE(queue_size,overflow_policy,worker_warmup_cb,flush_interval_ms,worker_teardown_cb) general::GeneralLog::SetAsyncMode(queue_size,overflow_policy,worker_warmup_cb,flush_interval_ms,worker_teardown_cb)
 #define LOG_SET_ERROR_HANDLE(cb) general::GeneralLog::SetErrorHandler(cb)
+#define LOG_DROP_ALL()           general::GeneralLog::DropAll()
 
 //#define LOG_TRACE(...)     general::GeneralLog::Trace(__VA_ARGS__" ["  "][" __FILE__ "(" GENERAL_LOG_STR_HELPER(__LINE__) ")]" )
 //#define LOG_DEBUG(...)     general::GeneralLog::Debug(__VA_ARGS__" ["  "][" __FILE__ "(" GENERAL_LOG_STR_HELPER(__LINE__) ")]" )
