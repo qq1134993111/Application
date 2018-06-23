@@ -104,22 +104,7 @@ namespace general
 
 	int32_t GeneralApplication::OnSingletonLockFilePath(std::string& path)
 	{
-		if (is_singleton_)
-		{
-			if (path.empty())
-			{
-
-				path = exe_file_path_;
-
-			}
-
-			return static_cast<int32_t>(ErrorCode::kSuccess);
-
-		}
-		else
-		{
-			return static_cast<int32_t>(ErrorCode::kPassed);
-		}
+		return static_cast<int32_t>(ErrorCode::kPassed);
 	}
 
 	class CallOnExit
@@ -278,15 +263,18 @@ namespace general
 				return;
 			}
 
-			std::string lock_dir_path;
-			if (OnSingletonLockFilePath(lock_dir_path) == static_cast<int32_t>(ErrorCode::kSuccess))
+			std::string lock_path;
+			if (OnSingletonLockFilePath(lock_path) == static_cast<int32_t>(ErrorCode::kSuccess) || is_singleton_)
 			{
-				std::string file_path = lock_dir_path;
+				if (lock_path.empty())
+					lock_path = exe_file_path_;
 
-				if (boost::filesystem::is_directory(lock_dir_path))
+				if (boost::filesystem::is_directory(lock_path))
 				{
-					file_path += boost::filesystem::path("/lock/").make_preferred().string() + GetAppLicationName();
+					lock_path += boost::filesystem::path("/lock/").make_preferred().string() + GetAppLicationName();
 				}
+
+				std::string file_path = lock_path;
 
 				singleton_process_.reset(new SingletonProcess(file_path));
 				auto ret = singleton_process_->Lock();
@@ -307,17 +295,14 @@ namespace general
 				}
 #elif defined(C_SYSTEM_WINDOWS)
 #endif
+
+				RedirectInputOutput();
 			}
 
 			if (OnDaemonizeEnd() != static_cast<int32_t>(ErrorCode::kSuccess))
 			{
 				LOG_ERROR("OnDaemonizeEnd not return success");
 				return;
-			}
-
-			if (is_daemonize_)
-			{
-				RedirectInputOutput();
 			}
 
 #if defined(C_SYSTEM_LINUX)
