@@ -478,7 +478,7 @@ namespace general
 
 	void GeneralApplication::RedirectInputOutput()
 	{
-#if defined(C_SYSTEM_LINUX)
+#if defined(C_SYSTEM_GNU_LINUX)
 		close(STDIN_FILENO);
 		close(STDIN_FILENO);
 		close(STDIN_FILENO);
