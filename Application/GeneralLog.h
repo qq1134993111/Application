@@ -77,6 +77,17 @@ namespace general
 			spdlog::set_level(log_level);
 		}
 
+		static inline void SetPattern(const std::string& pattern)
+		{
+			spdlog::set_pattern(pattern);
+		}
+
+		static inline void SetFormatter(spdlog::formatter_ptr msg_formatter)
+		{
+			spdlog::set_formatter(msg_formatter);
+		}
+
+
 		static inline void FlushOn(spdlog::level::level_enum log_level = spdlog::level::trace)
 		{
 			spdlog::flush_on(log_level);
@@ -105,6 +116,8 @@ namespace general
 		static inline void DropAll()
 		{
 			spdlog::drop_all();
+			s_logger.reset();
+			s_console.reset();	
 		}
 
 		template<typename... Args>
@@ -238,6 +251,8 @@ namespace general
 
 #define LOG_INIT(prop)           general::GeneralLog::Init(prop)
 #define LOG_SET_LEVEL(l)         general::GeneralLog::SetLevel(l)
+#define LOG_SET_PATTERN(s)       general::GeneralLog::SetPattern(s);
+#define LOG_SET_FORMATTER(f)     general::GeneralLog::SetFormatter(f);
 #define LOG_FLUSH_ON(l)          general::GeneralLog::FlushOn(l)
 #define LOG_FLUSH_ON_ALL()       general::GeneralLog::FlushOn()
 #define LOG_SET_SYNC_MODE()      general::GeneralLog::SetSyncMode()
