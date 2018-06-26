@@ -27,6 +27,9 @@
     <ClCompile Include="GeneralLog.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="MyApp.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SingletonProcess.h">
@@ -42,6 +45,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="GeneralLog.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MyApp.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

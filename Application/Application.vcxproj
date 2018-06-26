@@ -151,12 +151,14 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="GeneralApplication.cpp" />
     <ClCompile Include="GeneralLog.cpp" />
+    <ClCompile Include="MyApp.cpp" />
     <ClCompile Include="SingletonProcess.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CPreDefined.h" />
     <ClInclude Include="GeneralApplication.h" />
     <ClInclude Include="GeneralLog.h" />
+    <ClInclude Include="MyApp.h" />
     <ClInclude Include="Property.h" />
     <ClInclude Include="SingletonProcess.h" />
   </ItemGroup>
