@@ -246,8 +246,7 @@ namespace general
 
 }
 
-#define GENERAL_LOG_STR_H(x) #x
-#define GENERAL_LOG_STR_HELPER(x) GENERAL_LOG_STR_H(x)
+
 
 #define LOG_INIT(prop)           general::GeneralLog::Init(prop)
 #define LOG_SET_LEVEL(l)         general::GeneralLog::SetLevel(l)
@@ -260,14 +259,16 @@ namespace general
 #define LOG_SET_ERROR_HANDLE(cb) general::GeneralLog::SetErrorHandler(cb)
 #define LOG_DROP_ALL()           general::GeneralLog::DropAll()
 
-//#define LOG_TRACE(...)     general::GeneralLog::Trace(__VA_ARGS__" ["  "][" __FILE__ "(" GENERAL_LOG_STR_HELPER(__LINE__) ")]" )
-//#define LOG_DEBUG(...)     general::GeneralLog::Debug(__VA_ARGS__" ["  "][" __FILE__ "(" GENERAL_LOG_STR_HELPER(__LINE__) ")]" )
-#define LOG_TRACE(...)       general::GeneralLog::Trace(__VA_ARGS__)
-#define LOG_DEBUG(...)       general::GeneralLog::Debug(__VA_ARGS__)
-#define LOG_INFO(...)        general::GeneralLog::Info(__VA_ARGS__)
-#define LOG_WARN(...)        general::GeneralLog::Warn(__VA_ARGS__)
-#define LOG_ERROR(...)       general::GeneralLog::Error(__VA_ARGS__)
-#define LOG_CRITICAL(...)    general::GeneralLog::Critical(__VA_ARGS__)
+//#define GENERAL_LOG_STR_H(x) #x
+//#define GENERAL_LOG_STR_HELPER(x) GENERAL_LOG_STR_H(x)
+//#define LOG_TRACE(...)          general::GeneralLog::Trace(__VA_ARGS__" ["  "][" __FILE__ "(" GENERAL_LOG_STR_HELPER(__LINE__) ")]" )
+//#define LOG_DEBUG(...)          general::GeneralLog::Debug(__VA_ARGS__" ["  "][" __FILE__ "(" GENERAL_LOG_STR_HELPER(__LINE__) ")]" )
+#define LOG_TRACE(...)            general::GeneralLog::Trace(__VA_ARGS__)
+#define LOG_DEBUG(...)            general::GeneralLog::Debug(__VA_ARGS__)
+#define LOG_INFO(...)             general::GeneralLog::Info(__VA_ARGS__)
+#define LOG_WARN(...)             general::GeneralLog::Warn(__VA_ARGS__)
+#define LOG_ERROR(...)            general::GeneralLog::Error(__VA_ARGS__)
+#define LOG_CRITICAL(...)         general::GeneralLog::Critical(__VA_ARGS__)
 
 #define LOG_TRACE_FFL(fmt,...)    general::GeneralLog::LogFFL(__FUNCTION__,__FILE__,__LINE__,spdlog::level::level_enum::trace,fmt,__VA_ARGS__)
 #define LOG_DEBUG_FFL(fmt,...)    general::GeneralLog::LogFFL(__FUNCTION__,__FILE__,__LINE__,spdlog::level::level_enum::debug,fmt,__VA_ARGS__)
