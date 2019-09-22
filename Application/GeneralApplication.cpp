@@ -351,7 +351,7 @@ namespace general
 				catch (...)
 				{
 					LOG_ERROR("application throw exception in <OnRun> :{0}", boost::current_exception_diagnostic_information());
-					Stop();
+					//Stop();
 				}
 
 				if (ret == static_cast<int32_t>(ErrorCode::kSuccess)
@@ -494,12 +494,12 @@ namespace general
 	void GeneralApplication::RedirectInputOutput()
 	{
 #if defined(C_SYSTEM_GNU_LINUX)
-		close(STDIN_FILENO);
-		close(STDIN_FILENO);
-		close(STDIN_FILENO);
-		open("/dev/null", O_RDWR);
-		open("/dev/null", O_RDWR);
-		open("/dev/null", O_RDWR);
+		//close(STDIN_FILENO);
+		//close(STDIN_FILENO);
+		//close(STDIN_FILENO);
+		//open("/dev/null", O_RDWR);
+		//open("/dev/null", O_RDWR);
+		//open("/dev/null", O_RDWR);
 #elif defined(C_SYSTEM_WINDOWS)
 #endif
 }
