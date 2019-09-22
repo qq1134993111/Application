@@ -240,15 +240,15 @@ namespace general
 
 		std::string exe_file_name_;
 		std::string exe_file_path_;
-
+		std::string app_name_;
+		
 		std::atomic<bool> is_running_{ false };
 
 		bool is_daemonize_{ false };
 		bool is_singleton_{ false };
 
 		Property log_prop_;
-		std::string app_name_;
-
+	
 		std::set<std::string> option_name_set_;
 		std::map<std::string, std::function<int32_t()>> option_callback_map_;
 		boost::program_options::options_description options_desc_;

@@ -2,6 +2,9 @@
 
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/exception/diagnostic_information.hpp>
+#include "GeneralLog.h"
+
 
 namespace general
 {
@@ -69,6 +72,7 @@ namespace general
 		}
 		catch (...)
 		{
+			LOG_WARN("lock exception:{}", boost::current_exception_diagnostic_information());
 			return (int32_t)LockResult::kFailure;
 		}
 	}

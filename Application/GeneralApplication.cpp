@@ -140,7 +140,7 @@ namespace general
 			argv_ = argv;
 
 			boost::filesystem::path exe_full_path(argv_[0]);
-			exe_file_path_ = exe_full_path.parent_path().string();
+			exe_file_path_ = boost::filesystem::absolute(exe_full_path.parent_path()).string();
 			exe_file_name_ = exe_full_path.filename().string();
 
 			std::string default_app_name = boost::filesystem::path(exe_file_name_).stem().string();
@@ -153,7 +153,7 @@ namespace general
 				("singleton,s", "enable singleton file lock")
 				("name,n", boost::program_options::value<std::string>(&app_name_)->default_value(default_app_name), "set the application name,default exe name")
 				("log-dir", boost::program_options::value<std::string>()->default_value(exe_file_path_ + boost::filesystem::path("/").make_preferred().string() + "log"), "set the application log directory path,default ./log path")
-				("log-level,l", boost::program_options::value<std::string>()->default_value("info"), "set the application log level,[trace,debug, info, warning, error,critical,off],default info")
+				("log-level,l", boost::program_options::value<std::string>()->default_value("trace"), "set the application log level,[trace,debug, info, warning, error,critical,off],default info")
 				("log-to-console", "enable log to console")
 				;
 
@@ -275,7 +275,7 @@ namespace general
 				cmdline += argv_[i] + std::string(" ");
 			}
 			LOG_INFO("Command line parameter:{}", cmdline);
-
+			LOG_DEBUG("exe path:{0},exe name:{1},app name:{2}", exe_file_path_,exe_file_name_,app_name_);
 			std::string lock_path;
 			if (OnSingletonLockFilePath(lock_path) == static_cast<int32_t>(ErrorCode::kSuccess) || is_singleton_)
 			{
@@ -288,7 +288,7 @@ namespace general
 				}
 
 				std::string file_path = lock_path;
-
+				LOG_DEBUG("lock file path:{}", file_path);
 				singleton_process_.reset(new SingletonProcess(file_path));
 				auto ret = singleton_process_->Lock();
 				if (ret != static_cast<int32_t>(SingletonProcess::LockResult::kSuccess))
@@ -431,10 +431,10 @@ namespace general
 		boost::program_options::notify(options_vm_);
 		if (options_vm_.count("help"))
 		{
-			std::cout << "----------------------------------------------------------\n";
+			//std::cout << "----------------------------------------------------------\n";
 			std::cout << "usage:" << std::endl;
 			std::cout << options_desc_ << std::endl;
-			std::cout << "----------------------------------------------------------\n";
+			//std::cout << "----------------------------------------------------------\n";
 			return false;
 		}
 
@@ -446,7 +446,7 @@ namespace general
 		auto log_dir = GetOptionArgumentOptional<std::string>("log-dir");
 		if (log_dir)
 		{
-			log_prop_.SetValue(log_config_key::kLoggerFilename, *log_dir + "/" + GetAppLicationName() + ".log");
+			log_prop_.SetValue(log_config_key::kLoggerFilename, *log_dir + boost::filesystem::path("/").string() +GetAppLicationName() + ".log");
 		}
 
 		auto log_level = GetOptionArgumentOptional<std::string>("log-level");
