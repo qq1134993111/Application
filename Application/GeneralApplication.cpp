@@ -88,7 +88,7 @@ namespace general
 
 #elif defined(C_SYSTEM_WINDOWS)
 #endif
-	GeneralApplication::GeneralApplication() :options_desc_("Allowed options", 120)
+	GeneralApplication::GeneralApplication()
 	{
 		is_running_ = false;
 		singleton_process_ = nullptr;
@@ -125,12 +125,13 @@ namespace general
 
 	void GeneralApplication::Run(int argc, char* argv[])
 	{
-		CallOnExit on_exit([]()
-		{
-			std::cout << "application exit" << std::endl;
-			LOG_INFO("application exit");
-			LOG_FLUSH_ON_ALL();
-		});
+		CallOnExit on_exit(
+			[]()
+			{
+				std::cout << "application exit" << std::endl;
+				LOG_INFO("application exit");
+				LOG_FLUSH_ON_ALL();
+			});
 
 		(void)on_exit;
 		try
@@ -144,6 +145,8 @@ namespace general
 
 			std::string default_app_name = boost::filesystem::path(exe_file_name_).stem().string();
 
+			decltype(options_desc_) desc(default_app_name + " options", 210);
+			options_desc_.add(desc);
 			options_desc_.add_options()
 				("help,h", "show this information")
 				("daemon,d", "launch application as a daemon process")
@@ -154,54 +157,57 @@ namespace general
 				("log-to-console", "enable log to console")
 				;
 
-			AddOptionWithCallback("log-mt", "enable multithread log", [&](const std::string& option_name)->int32_t
-			{
-				log_prop_.SetValue(log_config_key::kLoggerThreadMode, static_cast<uint8_t>(log_config_key::LoggerThreadMode::kLoggerMt));
-				return static_cast<int32_t>(ErrorCode::kSuccess);
-			});
-
-			AddOptionWithCallback("log-async", "enable async log", [&](const std::string& option_name)->int32_t {
-
-				log_prop_.SetValue(log_config_key::kAsyncMode, true);
-				return static_cast<int32_t>(ErrorCode::kSuccess);
-			});
-
-			AddOptionWithCallback<uint32_t>("log-async-queue-size", "async log queue size,default 8192", 8192, [&](const std::string& option_name, uint32_t size)->int32_t
-			{
-				log_prop_(log_config_key::kAsyncQueueSize, size);
-				return static_cast<int32_t>(ErrorCode::kSuccess);
-			});
-
-			AddOptionWithCallback<std::string>("log-type,t", "log type,[basic,rotating,daily],defualt basic", "basic", [&](const std::string& option_name, const std::string& value)->int32_t
-			{
-				std::unordered_map<std::string, uint8_t> umap
+			AddOptionWithCallback("log-mt", "enable multithread log",
+				[&](const std::string& option_name)->int32_t
 				{
-					{"basic",static_cast<uint8_t>(log_config_key::LoggerType::kLoggerTypeBasic)},
-					{ "rotating",static_cast<uint8_t>(log_config_key::LoggerType::kLoggerTypeRotating) },
-					{ "daily",static_cast<uint8_t>(log_config_key::LoggerType::kLoggerTypeDaily) }
-				};
+					log_prop_.SetValue(log_config_key::kLoggerThreadMode, static_cast<uint8_t>(log_config_key::LoggerThreadMode::kLoggerMt));
+					return static_cast<int32_t>(ErrorCode::kSuccess);
+				});
 
-				auto level = boost::algorithm::to_lower_copy(value);
-
-				auto it = umap.find(level);
-				if (it == umap.end())
+			AddOptionWithCallback("log-async", "enable async log",
+				[&](const std::string& option_name)->int32_t
 				{
+					log_prop_.SetValue(log_config_key::kAsyncMode, true);
+					return static_cast<int32_t>(ErrorCode::kSuccess);
+				});
 
-					return  static_cast<int32_t>(ErrorCode::kFailure);
-				}
+			AddOptionWithCallback<uint32_t>("log-async-queue-size", "async log queue size,default 8192", 8192,
+				[&](const std::string& option_name, uint32_t size)->int32_t
+				{
+					log_prop_(log_config_key::kAsyncQueueSize, size);
+					return static_cast<int32_t>(ErrorCode::kSuccess);
+				});
 
-				log_prop_.SetValue(log_config_key::kLoggerType, it->second);
+			AddOptionWithCallback<std::string>("log-type,t", "log type,[basic,rotating,daily],defualt basic", "basic",
+				[&](const std::string& option_name, const std::string& value)->int32_t
+				{
+					std::unordered_map<std::string, uint8_t> umap
+					{
+						{"basic",static_cast<uint8_t>(log_config_key::LoggerType::kLoggerTypeBasic)},
+						{ "rotating",static_cast<uint8_t>(log_config_key::LoggerType::kLoggerTypeRotating) },
+						{ "daily",static_cast<uint8_t>(log_config_key::LoggerType::kLoggerTypeDaily) }
+					};
 
-				return static_cast<int32_t>(ErrorCode::kSuccess);
-			});
+					auto level = boost::algorithm::to_lower_copy(value);
+
+					auto it = umap.find(level);
+					if (it == umap.end())
+					{
+						std::cout << "cmdline log-type error\n";
+						return  static_cast<int32_t>(ErrorCode::kFailure);
+					}
+
+					log_prop_.SetValue(log_config_key::kLoggerType, it->second);
+
+					return static_cast<int32_t>(ErrorCode::kSuccess);
+				});
 
 			AddOptionWithCallback<bool>("basic-truncate", "basic log whether to truncate the original file.defualt false", false,
 				[&](const std::string& option_name, const bool& value)
-			{
-
-				log_prop_(log_config_key::kBasicTruncate, value);
-				return static_cast<int32_t>(ErrorCode::kSuccess);
-			});
+				{
+					log_prop_(log_config_key::kBasicTruncate, value);
+					return static_cast<int32_t>(ErrorCode::kSuccess);
+				});
 
 			auto fun_rotate_set = [&](const std::string& option_name, const uint32_t& value)
 			{
@@ -235,12 +241,12 @@ namespace general
 			AddOptionWithCallback<std::string>("daily_time", "daily log will create a new log file each day on HH:mm,default 00:00", "00:00", fun_daily_set);
 
 
-			//AddOptionWithCallback<std::string>("log-pattern", "log pattern", "*** [%Y-%m-%d %H:%M:%S,%f] %v ***",
-			//	[&](const std::string& option_name, const std::string& value)->int32_t
-			//{
-			//	log_prop_(log_config_key::kLoggerPattern, value);
-			//	return static_cast<int32_t>(ErrorCode::kSuccess);
-			//});
+			AddOptionWithCallback<std::string>("log-pattern", "log pattern", general::log_config_key::default_value::kLoggerPatternValue,
+				[&](const std::string& option_name, const std::string& value)->int32_t
+				{
+					log_prop_(log_config_key::kLoggerPattern, value);
+					return static_cast<int32_t>(ErrorCode::kSuccess);
+				});
 
 			//AddOptionWithArgument<std::string>("name,n", "set the application name,default exe name", default_app_name, &app_name_);
 
@@ -262,6 +268,13 @@ namespace general
 				std::cout << "log init failed" << std::endl;
 				return;
 			}
+
+			std::string cmdline;
+			for (int i = 0; i < argc_; i++)
+			{
+				cmdline += argv_[i] + std::string(" ");
+			}
+			LOG_INFO("Command line parameter:{}", cmdline);
 
 			std::string lock_path;
 			if (OnSingletonLockFilePath(lock_path) == static_cast<int32_t>(ErrorCode::kSuccess) || is_singleton_)
@@ -418,8 +431,10 @@ namespace general
 		boost::program_options::notify(options_vm_);
 		if (options_vm_.count("help"))
 		{
+			std::cout << "----------------------------------------------------------\n";
 			std::cout << "usage:" << std::endl;
 			std::cout << options_desc_ << std::endl;
+			std::cout << "----------------------------------------------------------\n";
 			return false;
 		}
 
@@ -487,6 +502,6 @@ namespace general
 		open("/dev/null", O_RDWR);
 #elif defined(C_SYSTEM_WINDOWS)
 #endif
-	}
+}
 
 }

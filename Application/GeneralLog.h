@@ -41,8 +41,8 @@ namespace general
 		namespace default_value
 		{
 			const spdlog::filename_t kLoggerFilenameValue("./log/general_log.log");
-			const std::string kLoggerPatternValue("[%Y-%m-%d %H:%M:%S.%f] [%P,%t] [%l]  %v [%!,%@]");
-			const bool kUseConsoleLoggerValue(true);
+			const std::string kLoggerPatternValue("[%Y-%m-%d %H:%M:%S.%f] [%-6P,%6t] [%=8l]  %v [%!,%@]");
+			const bool kUseConsoleLoggerValue(false);
 			const LoggerThreadMode kLoggerThreadModeValue = LoggerThreadMode::kLoggerSt;
 			const LoggerType kLoggerTypeValue = LoggerType::kLoggerTypeBasic;
 			const bool kBasicTruncateValue(false);
@@ -210,10 +210,10 @@ namespace general
 #define LOG_DROP_ALL()           general::GeneralLog::DropAll()
 #define LOG_SHUTDOWN()           general::GeneralLog::Shutdown()
 
-#define LOG_TRACE(...)            general::GeneralLog::Trace(spdlog::source_loc{SPDLOG_FILE_BASENAME(__FILE__), __LINE__, SPDLOG_FUNCTION},__VA_ARGS__)
-#define LOG_DEBUG(...)            general::GeneralLog::Debug(spdlog::source_loc{SPDLOG_FILE_BASENAME(__FILE__), __LINE__, SPDLOG_FUNCTION},__VA_ARGS__)
-#define LOG_INFO(...)             general::GeneralLog::Info(spdlog::source_loc{SPDLOG_FILE_BASENAME(__FILE__), __LINE__, SPDLOG_FUNCTION},__VA_ARGS__)
-#define LOG_WARN(...)             general::GeneralLog::Warn(spdlog::source_loc{SPDLOG_FILE_BASENAME(__FILE__), __LINE__, SPDLOG_FUNCTION},__VA_ARGS__)
-#define LOG_ERROR(...)            general::GeneralLog::Error(spdlog::source_loc{SPDLOG_FILE_BASENAME(__FILE__), __LINE__, SPDLOG_FUNCTION},__VA_ARGS__)
-#define LOG_CRITICAL(...)         general::GeneralLog::Critical(spdlog::source_loc{SPDLOG_FILE_BASENAME(__FILE__), __LINE__, SPDLOG_FUNCTION},__VA_ARGS__)
+#define LOG_TRACE(...)           general::GeneralLog::Trace(spdlog::source_loc{SPDLOG_FILE_BASENAME(__FILE__), __LINE__, SPDLOG_FUNCTION},__VA_ARGS__)
+#define LOG_DEBUG(...)           general::GeneralLog::Debug(spdlog::source_loc{SPDLOG_FILE_BASENAME(__FILE__), __LINE__, SPDLOG_FUNCTION},__VA_ARGS__)
+#define LOG_INFO(...)            general::GeneralLog::Info(spdlog::source_loc{SPDLOG_FILE_BASENAME(__FILE__), __LINE__, SPDLOG_FUNCTION},__VA_ARGS__)
+#define LOG_WARN(...)            general::GeneralLog::Warn(spdlog::source_loc{SPDLOG_FILE_BASENAME(__FILE__), __LINE__, SPDLOG_FUNCTION},__VA_ARGS__)
+#define LOG_ERROR(...)           general::GeneralLog::Error(spdlog::source_loc{SPDLOG_FILE_BASENAME(__FILE__), __LINE__, SPDLOG_FUNCTION},__VA_ARGS__)
+#define LOG_CRITICAL(...)        general::GeneralLog::Critical(spdlog::source_loc{SPDLOG_FILE_BASENAME(__FILE__), __LINE__, SPDLOG_FUNCTION},__VA_ARGS__)
 

@@ -144,9 +144,11 @@ namespace general
 			}
 
 			std::string long_option_name = GetLongOptionName(option_name);
-			option_callback_map_.emplace(long_option_name, [=]()->int32_t {
-				return  callback(long_option_name);
-			});
+			option_callback_map_.emplace(long_option_name, 
+				[=]()->int32_t 
+				{
+				   return  callback(long_option_name);
+				});
 
 			options_desc_.add_options()(option_name, option_desc);
 
@@ -163,9 +165,11 @@ namespace general
 			}
 
 			std::string long_option_name = GetLongOptionName(option_name);
-			option_callback_map_.emplace(long_option_name, [=]()->int32_t {
-				return callback(long_option_name, GetOptionArgument<ArgumentType>(long_option_name));
-			});
+			option_callback_map_.emplace(long_option_name, 
+				[=]()->int32_t 
+				{
+				   return callback(long_option_name, GetOptionArgument<ArgumentType>(long_option_name));
+				});
 
 			options_desc_.add_options()(option_name, boost::program_options::value<ArgumentType>(), option_desc);
 
@@ -182,9 +186,11 @@ namespace general
 			}
 
 			std::string long_option_name = GetLongOptionName(option_name);
-			option_callback_map_.emplace(long_option_name, [=]()->int32_t {
-				return callback(long_option_name, GetOptionArgument<ArgumentType>(long_option_name));
-			});
+			option_callback_map_.emplace(long_option_name, 
+				[=]()->int32_t
+				{
+				   return callback(long_option_name, GetOptionArgument<ArgumentType>(long_option_name));
+				});
 
 			options_desc_.add_options()(option_name, boost::program_options::value<ArgumentType>()->default_value(default_value), option_desc);
 
@@ -247,7 +253,6 @@ namespace general
 		std::map<std::string, std::function<int32_t()>> option_callback_map_;
 		boost::program_options::options_description options_desc_;
 		boost::program_options::variables_map options_vm_;
-
 
 		std::unique_ptr<SingletonProcess> singleton_process_;
 
