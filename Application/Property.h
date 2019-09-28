@@ -115,7 +115,7 @@ namespace general
 				std::is_same<double, U>::value),
 			boost::optional<U>>
 			::type
-			GetValue(const T& key) const
+			GetValue(const T & key) const
 		{
 			try
 			{
@@ -155,7 +155,7 @@ namespace general
 			std::is_same<long, U>::value,
 			boost::optional<U>>
 			::type
-			GetValue(const T& key) const
+			GetValue(const T & key) const
 		{
 			try
 			{
@@ -179,7 +179,7 @@ namespace general
 			std::is_same<float, U>::value ||
 			std::is_same<float, U>::value,
 			boost::optional<U>>::type
-			GetValue(const T& key) const
+			GetValue(const T & key) const
 		{
 			try
 			{
@@ -196,6 +196,16 @@ namespace general
 			}
 
 			return {};
+		}
+
+		bool HasKey(const T& key)
+		{
+			return (prop_any_umap_.find(key) != prop_any_umap_.end());
+		}
+
+		void DeleteKey(const T& key)
+		{
+			prop_any_umap_.erase(key);
 		}
 
 		void Clear()
@@ -215,7 +225,7 @@ namespace general
 		~Property() {}
 
 		template<typename U>
-		Property& operator()(uint32_t key, const U& value)
+		Property& operator()(uint64_t key, const U& value)
 		{
 			prop_i_.SetValue(key, value);
 			return *this;
@@ -229,7 +239,7 @@ namespace general
 		}
 
 		template<typename U>
-		Property& SetValue(uint32_t key, const U& value)
+		Property& SetValue(uint64_t key, const U& value)
 		{
 			prop_i_.SetValue(key, value);
 			return *this;
@@ -243,7 +253,7 @@ namespace general
 		}
 
 		template<typename U>
-		U GetValue(uint32_t key, const U& default_value) const
+		U GetValue(uint64_t key, const U& default_value) const
 		{
 			return prop_i_.GetValue(key, default_value);
 		}
@@ -256,7 +266,7 @@ namespace general
 		}
 
 		template<typename U>
-		boost::optional<U> GetValue(uint32_t key) const
+		boost::optional<U> GetValue(uint64_t key) const
 		{
 			return prop_i_.GetValue<U>(key);
 		}
@@ -267,13 +277,34 @@ namespace general
 			return prop_s_.GetValue<U>(key);
 		}
 
+		bool HasKey(const std::string& key)
+		{
+			return prop_s_.HasKey(key);
+		}
+
+		bool HasKey(const uint64_t& key)
+		{
+			return prop_i_.HasKey(key);
+		}
+
+		void DeleteKey(const std::string& key)
+		{
+			 prop_s_.HasKey(key);
+		}
+
+		void DeleteKey(const uint64_t& key)
+		{
+			 prop_i_.HasKey(key);
+		}
+
 		void Clear()
 		{
 			prop_i_.Clear();
 			prop_s_.Clear();
 		}
+
 	private:
-		PropertyT<uint32_t> prop_i_;
+		PropertyT<uint64_t> prop_i_;
 		PropertyT<std::string> prop_s_;
 	};
 
