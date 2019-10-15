@@ -25,25 +25,7 @@ namespace general
 		}
 
 		template<typename U>
-		typename std::enable_if<
-			!(std::is_same<bool, U>::value ||
-				std::is_same<char, U>::value ||
-				std::is_same<unsigned char, U>::value ||
-				std::is_same<int8_t, U>::value ||
-				std::is_same<uint8_t, U>::value ||
-				std::is_same<int16_t, U>::value ||
-				std::is_same<uint16_t, U>::value ||
-				std::is_same<int32_t, U>::value ||
-				std::is_same<uint32_t, U>::value ||
-				std::is_same<int64_t, U>::value ||
-				std::is_same<uint64_t, U>::value ||
-				std::is_same<unsigned int, U>::value ||
-				std::is_same<int, U>::value ||
-				std::is_same<unsigned long, U>::value ||
-				std::is_same<long, U>::value ||
-				std::is_same<float, U>::value ||
-				std::is_same<double, U>::value),
-			PropertyT&>::type
+		typename std::enable_if<!std::is_arithmetic<U>::value, PropertyT&>::type
 			SetValue(const T& key, const U& value)
 		{
 			prop_any_umap_[key] = value;
@@ -51,80 +33,39 @@ namespace general
 		}
 
 		template<typename U>
-		typename std::enable_if<
-			std::is_same<bool, U>::value ||
-			std::is_same<char, U>::value ||
-			std::is_same<unsigned char, U>::value ||
-			std::is_same<int8_t, U>::value ||
-			std::is_same<uint8_t, U>::value ||
-			std::is_same<int16_t, U>::value ||
-			std::is_same<uint16_t, U>::value ||
-			std::is_same<int32_t, U>::value ||
-			std::is_same<uint32_t, U>::value ||
-			std::is_same<int64_t, U>::value ||
-			std::is_same<uint64_t, U>::value ||
-			std::is_same<unsigned int, U>::value ||
-			std::is_same<int, U>::value ||
-			std::is_same<unsigned long, U>::value ||
-			std::is_same<long, U>::value,
-			PropertyT>::type
+		typename std::enable_if<std::is_integral<U>::value, PropertyT&>::type
 			SetValue(const T& key, const U& value)
 		{
-			prop_any_umap_[key] = (uint64_t)value;
+			prop_any_umap_[key] = static_cast<uint64_t>(value);
 			return *this;
 		}
 
 		template<typename U>
-		typename std::enable_if<
-			std::is_same<float, U>::value ||
-			std::is_same<double, U>::value,
-			PropertyT&>::type
+		typename std::enable_if<std::is_floating_point<U>::value, PropertyT&>::type
 			SetValue(const T& key, const U& value)
 		{
-			prop_any_umap_[key] = (double)value;
+			prop_any_umap_[key] = static_cast<long double>(value);
 			return *this;
 		}
 
 		template<typename U>
 		U GetValue(const T& key, const U& default_value) const
 		{
-
 			boost::optional<U> value = GetValue<U>(key);
 			return value.value_or(default_value);
 		}
 
 
 		template<typename U>
-		typename std::enable_if<
-			!(std::is_same<bool, U>::value ||
-				std::is_same<char, U>::value ||
-				std::is_same<unsigned char, U>::value ||
-				std::is_same<int8_t, U>::value ||
-				std::is_same<uint8_t, U>::value ||
-				std::is_same<int16_t, U>::value ||
-				std::is_same<uint16_t, U>::value ||
-				std::is_same<int32_t, U>::value ||
-				std::is_same<uint32_t, U>::value ||
-				std::is_same<int64_t, U>::value ||
-				std::is_same<uint64_t, U>::value ||
-				std::is_same<unsigned int, U>::value ||
-				std::is_same<int, U>::value ||
-				std::is_same<unsigned long, U>::value ||
-				std::is_same<long, U>::value ||
-				std::is_same<float, U>::value ||
-				std::is_same<double, U>::value),
-			boost::optional<U>>
-			::type
-			GetValue(const T & key) const
+		typename std::enable_if<!std::is_arithmetic<U>::value, boost::optional<U>>::type
+			GetValue(const T& key) const
 		{
 			try
 			{
 				auto it = prop_any_umap_.find(key);
 				if (it != prop_any_umap_.end())
 				{
-
 					return boost::any_cast<U>(it->second);
-
 				}
 
 			}
@@ -137,25 +78,8 @@ namespace general
 		}
 
 		template<typename U>
-		typename std::enable_if<
-			std::is_same<bool, U>::value ||
-			std::is_same<char, U>::value ||
-			std::is_same<unsigned char, U>::value ||
-			std::is_same<int8_t, U>::value ||
-			std::is_same<uint8_t, U>::value ||
-			std::is_same<int16_t, U>::value ||
-			std::is_same<uint16_t, U>::value ||
-			std::is_same<int32_t, U>::value ||
-			std::is_same<uint32_t, U>::value ||
-			std::is_same<int64_t, U>::value ||
-			std::is_same<uint64_t, U>::value ||
-			std::is_same<unsigned int, U>::value ||
-			std::is_same<int, U>::value ||
-			std::is_same<unsigned long, U>::value ||
-			std::is_same<long, U>::value,
-			boost::optional<U>>
-			::type
-			GetValue(const T & key) const
+		typename std::enable_if<std::is_integral<U>::value, boost::optional<U>>::type
+			GetValue(const T& key) const
 		{
 			try
 			{
@@ -175,18 +99,15 @@ namespace general
 		}
 
 		template<typename U>
-		typename std::enable_if<
-			std::is_same<float, U>::value ||
-			std::is_same<float, U>::value,
-			boost::optional<U>>::type
-			GetValue(const T & key) const
+		typename std::enable_if<std::is_floating_point<U>::value, boost::optional<U>>::type
+			GetValue(const T& key) const
 		{
 			try
 			{
 				auto it = prop_any_umap_.find(key);
 				if (it != prop_any_umap_.end())
 				{
-					return boost::any_cast<double>(it->second);
+					return boost::any_cast<long double>(it->second);
 				}
 
 			}
@@ -289,12 +210,12 @@ namespace general
 
 		void DeleteKey(const std::string& key)
 		{
-			 prop_s_.HasKey(key);
+			prop_s_.HasKey(key);
 		}
 
 		void DeleteKey(const uint64_t& key)
 		{
-			 prop_i_.HasKey(key);
+			prop_i_.HasKey(key);
 		}
 
 		void Clear()
