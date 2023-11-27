@@ -13,42 +13,99 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="base">
+      <UniqueIdentifier>{5a26e741-5af6-45c7-a6ac-d329c26302fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rd">
+      <UniqueIdentifier>{0b308b32-f4b8-44b5-9c3e-2b7561ae2943}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rd\spdlog">
+      <UniqueIdentifier>{52cdb119-bc27-41ca-80cf-dffb3b63d596}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Application.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="SingletonProcess.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneralApplication.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneralLog.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="MyApp.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="base\GeneralApplication.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="base\GeneralLog.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="base\SingletonProcess.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SingletonProcess.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneralApplication.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="CPreDefined.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Property.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneralLog.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="MyApp.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="base\CPreDefined.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="base\GeneralApplication.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="base\GeneralLog.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="base\Property.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="base\SingletonProcess.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\async.h">
+      <Filter>3rd\spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\async_logger.h">
+      <Filter>3rd\spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\async_logger-inl.h">
+      <Filter>3rd\spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\common.h">
+      <Filter>3rd\spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\common-inl.h">
+      <Filter>3rd\spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\formatter.h">
+      <Filter>3rd\spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\fwd.h">
+      <Filter>3rd\spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\logger.h">
+      <Filter>3rd\spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\logger-inl.h">
+      <Filter>3rd\spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\pattern_formatter.h">
+      <Filter>3rd\spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\pattern_formatter-inl.h">
+      <Filter>3rd\spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\spdlog.h">
+      <Filter>3rd\spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\spdlog-inl.h">
+      <Filter>3rd\spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\stopwatch.h">
+      <Filter>3rd\spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\tweakme.h">
+      <Filter>3rd\spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\version.h">
+      <Filter>3rd\spdlog</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -105,6 +105,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>./base;../3rd;../3rd/spdlog/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,6 +140,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>./base;../3rd;../3rd/spdlog/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -149,18 +151,34 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
-    <ClCompile Include="GeneralApplication.cpp" />
-    <ClCompile Include="GeneralLog.cpp" />
+    <ClCompile Include="base\GeneralApplication.cpp" />
+    <ClCompile Include="base\GeneralLog.cpp" />
+    <ClCompile Include="base\SingletonProcess.cpp" />
     <ClCompile Include="MyApp.cpp" />
-    <ClCompile Include="SingletonProcess.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CPreDefined.h" />
-    <ClInclude Include="GeneralApplication.h" />
-    <ClInclude Include="GeneralLog.h" />
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\async.h" />
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\async_logger-inl.h" />
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\async_logger.h" />
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\common-inl.h" />
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\common.h" />
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\formatter.h" />
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\fwd.h" />
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\logger-inl.h" />
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\logger.h" />
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\pattern_formatter-inl.h" />
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\pattern_formatter.h" />
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\spdlog-inl.h" />
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\spdlog.h" />
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\stopwatch.h" />
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\tweakme.h" />
+    <ClInclude Include="..\3rd\spdlog\include\spdlog\version.h" />
+    <ClInclude Include="base\CPreDefined.h" />
+    <ClInclude Include="base\GeneralApplication.h" />
+    <ClInclude Include="base\GeneralLog.h" />
+    <ClInclude Include="base\Property.h" />
+    <ClInclude Include="base\SingletonProcess.h" />
     <ClInclude Include="MyApp.h" />
-    <ClInclude Include="Property.h" />
-    <ClInclude Include="SingletonProcess.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
