@@ -10,8 +10,9 @@
 namespace general
 {
 	std::shared_ptr<spdlog::logger> GeneralLog::s_logger = nullptr;
+    spdlog::logger *GeneralLog::s_logger_raw=nullptr;
 
-	int32_t GeneralLog::Init(const Property& prop)
+    int32_t GeneralLog::Init(const Property &prop)
 	{
 		if (s_logger != nullptr)
 			return  static_cast<int32_t>(ErrorCode::kAlreadyInit);
@@ -152,25 +153,36 @@ namespace general
 		{
 			spdlog::init_thread_pool(
 				prop.GetValue(log_config_key::kAsyncQueueSize, log_config_key::default_value::kAsyncQueueSizeValue),
-				1);
+				prop.GetValue(log_config_key::kAsyncThreadCount,log_config_key::default_value::kAsyncThreadCountValue));
 
-			s_logger = std::make_shared<spdlog::async_logger>(logger_name, std::begin(v_sink), std::end(v_sink), spdlog::thread_pool(), spdlog::async_overflow_policy::block);
+			s_logger = std::make_shared<spdlog::async_logger>(logger_name, std::begin(v_sink), std::end(v_sink), spdlog::thread_pool(), 
+				spdlog::async_overflow_policy::block);
+            
+			spdlog::flush_every(std::chrono::microseconds(prop.GetValue(log_config_key::kAsyncFlushEveryMicrosecondInterval,
+				log_config_key::default_value::kAsyncFlushEveryMicrosecondIntervalValue)));
 		}
 		else
 		{
 			s_logger = std::make_shared<spdlog::logger>(logger_name, std::begin(v_sink), std::end(v_sink));
+			
 		}
 
+	
+		//spdlog::enable_backtrace(128);
+        //spdlog::dump_backtrace();
+		//s_logger->enable_backtrace(128);
+        //s_logger->dump_backtrace();
 		spdlog::register_logger(s_logger);
 		spdlog::set_default_logger(s_logger);
 
-		spdlog::set_pattern(prop.GetValue(log_config_key::kLoggerPattern, log_config_key::default_value::kLoggerPatternValue));
-
+		//spdlog::set_pattern(prop.GetValue(log_config_key::kLoggerPattern, log_config_key::default_value::kLoggerPatternValue));
+        s_logger->set_pattern(prop.GetValue(log_config_key::kLoggerPattern, log_config_key::default_value::kLoggerPatternValue));
 		std::string log_level = prop.GetValue(log_config_key::kLoggerLevel, log_config_key::default_value::kLoggerLevelValue);
 		auto level = spdlog::level::from_str(log_level);
-		spdlog::set_level(level);
+		//spdlog::set_level(level);
+        s_logger->set_level(level);
 
-
+		s_logger_raw = s_logger.get();
 		return static_cast<int32_t>(ErrorCode::kSuccess);
 	}
 }
