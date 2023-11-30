@@ -244,7 +244,8 @@ namespace general
 					return static_cast<int32_t>(ErrorCode::kSuccess);
 				});
 
-			AddOptionWithCallback<bool>("basic-truncate","basic log whether to truncate the original file.default false", false,
+			AddOptionWithCallback<bool>("basic-truncate",
+                                        fmt::format("basic log whether to truncate the original file. default {}",log_config_key::default_value::kBasicTruncateValue).c_str(),
                                         [this](const std::string &option_name, const bool &value) {
                                             std::cout << log_config_key::kBasicTruncate << ":" << value << "\n";
                                             log_prop_(log_config_key::kBasicTruncate, value);
@@ -563,7 +564,7 @@ namespace general
 		{
 			if (options_vm_.count(option_name))
 			{
-                std::cout << option_name << "\n";
+                //std::cout << option_name << "\n";
 				OnProgramOption(option_name);
 			}
 		}
