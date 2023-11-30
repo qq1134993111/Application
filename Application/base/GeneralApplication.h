@@ -62,8 +62,7 @@ namespace general
 
 		virtual int32_t OnLogInit(Property& log_prop) { return static_cast<int32_t>(ErrorCode::kPassed); }
 		virtual int32_t OnInit() { return static_cast<int32_t>(ErrorCode::kSuccess); }
-
-
+        virtual int32_t OnStart(){return static_cast<int32_t>(ErrorCode::kSuccess); }
 		virtual int32_t OnRun() { return static_cast<int32_t>(ErrorCode::kPassed); }
 		virtual void OnIdle();
 		virtual void OnSignal(int sig_num, int value) {}

@@ -167,11 +167,17 @@ namespace general
 			
 		}
 
-	
-		//spdlog::enable_backtrace(128);
-        //spdlog::dump_backtrace();
-		//s_logger->enable_backtrace(128);
-        //s_logger->dump_backtrace();
+	    int backtrace_size = prop.GetValue(log_config_key::kBacktraceSize, log_config_key::default_value::kBacktraceSizeValue);
+        if (backtrace_size == 0)
+        {
+            s_logger->disable_backtrace();
+        }
+        else
+        {
+            s_logger->enable_backtrace(backtrace_size);
+            // s_logger->dump_backtrace();
+        }
+
 		spdlog::register_logger(s_logger);
 		spdlog::set_default_logger(s_logger);
 

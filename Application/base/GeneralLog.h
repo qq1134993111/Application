@@ -24,6 +24,7 @@ namespace general
 		const std::string kAsyncQueueSize("kAsyncQueueSize");
         const std::string kAsyncThreadCount("kAsyncThreadCount");
         const std::string kAsyncFlushEveryMicrosecondInterval("kAsyncFlushEveryMicrosecondInterval");
+        const std::string kBacktraceSize("kBacktraceSize");
 		const std::string kLoggerLevel("kLoggerLevel");
 
 		enum class LoggerThreadMode :uint8_t
@@ -55,7 +56,8 @@ namespace general
 			const bool kAsyncModeValue(false);
 			const uint32_t kAsyncQueueSizeValue(8092);
             const uint32_t kAsyncThreadCountValue(1);
-            const uint32_t kAsyncFlushEveryMicrosecondIntervalValue(1000000); 
+            const uint32_t kAsyncFlushEveryMicrosecondIntervalValue(100000); 
+			const uint32_t kBacktraceSizeValue(0);
 			const std::string kLoggerLevelValue("trace");//  "trace", "debug", "info", "warning", "error", "critical", "off"     
 		}
 
