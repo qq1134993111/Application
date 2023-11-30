@@ -191,7 +191,8 @@ namespace general
 					return static_cast<int32_t>(ErrorCode::kSuccess);
 				});
 
-			AddOptionWithCallback<uint32_t>("log-async-queue-size", "async log queue size,default 8192", 8192,
+			AddOptionWithCallback<uint32_t>("log-async-queue-size",
+                fmt::format("async log queue size,default {}", log_config_key::default_value::kAsyncQueueSizeValue).c_str(),
 				[this](const std::string& option_name, uint32_t size)->int32_t
 				{
                     std::cout << log_config_key::kAsyncQueueSize << ":" << size << "\n";
@@ -199,7 +200,8 @@ namespace general
 					return static_cast<int32_t>(ErrorCode::kSuccess);
 				});
 
-            AddOptionWithCallback<uint32_t>("log-async-thread-count", "async log thread count,default 1", 1,
+            AddOptionWithCallback<uint32_t>("log-async-thread-count",
+                                            fmt::format("async log thread count,default {}", log_config_key::default_value::kAsyncThreadCountValue).c_str(),
                                             [this](const std::string &option_name, uint32_t count) -> int32_t {
 
                                                 std::cout << log_config_key::kAsyncThreadCount << ":" << count << "\n";
@@ -207,7 +209,9 @@ namespace general
                                                 return static_cast<int32_t>(ErrorCode::kSuccess);
                                             });
 
-            AddOptionWithCallback<uint64_t>("log-async-flush-every-microsecond-interval","async log flush every microsecond interval,default 10000 microsecond", 10000,
+            AddOptionWithCallback<uint64_t>(
+                "log-async-flush-every-microsecond-interval",
+                fmt::format("async log flush every microsecond interval,default {} microsecond", log_config_key::default_value::kAsyncFlushEveryMicrosecondIntervalValue).c_str(),
                 [this](const std::string &option_name,uint64_t microsecond_interval) -> int32_t {
                     std::cout << log_config_key::kAsyncFlushEveryMicrosecondInterval << ":" << microsecond_interval << "\n";
                     log_prop_(log_config_key::kAsyncFlushEveryMicrosecondInterval, microsecond_interval);
@@ -247,7 +251,7 @@ namespace general
                                             return static_cast<int32_t>(ErrorCode::kSuccess);
                                         });
 
-			auto fun_rotate_set = [this](const std::string& option_name, const uint32_t& value)
+			auto fun_rotate_set = [this](const std::string& option_name, const uint64_t& value)
 			{
 				if (option_name == "rotating-max-file-size")
 				{
@@ -261,8 +265,9 @@ namespace general
 				}
 				return static_cast<int32_t>(ErrorCode::kSuccess);
 			};
-			AddOptionWithCallback<uint32_t>("rotating-max-file-size", "rotating log max file size,default 1G bytes", fun_rotate_set);
-			AddOptionWithCallback<uint32_t>("rotating-max-files", "rotating log max files,default 10 files", fun_rotate_set);
+
+            AddOptionWithCallback<uint64_t>("rotating-max-file-size",fmt::format("rotating log max file size,default {} bytes", log_config_key::default_value::kRotatingMaxFileSizeValue).c_str(),fun_rotate_set);
+            AddOptionWithCallback<uint64_t>("rotating-max-files", fmt::format("rotating log max files,default {} files",log_config_key::default_value::kRotatingMaxFilesValue).c_str(), fun_rotate_set);
 
 			auto fun_daily_set = [this](const std::string& option_name, const std::string& value)
 			{
@@ -292,7 +297,9 @@ namespace general
 					return static_cast<int32_t>(ErrorCode::kSuccess);
 				});
 
-			AddOptionWithCallback<uint16_t>("log-backtrace-size", "enable log backtrace and set size,default 0 disable",
+			AddOptionWithCallback<uint16_t>(
+                "log-backtrace-size",
+                fmt::format("enable log backtrace and set size,0 is disable . default {}",log_config_key::default_value::kBacktraceSizeValue).c_str(),
                 [this](const std::string &option_name, uint16_t n_message) -> int32_t 
 				{
                     std::cout << log_config_key::kBacktraceSize << ":" << n_message << "\n";
