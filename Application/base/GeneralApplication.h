@@ -41,17 +41,33 @@ namespace general
 			kDuplicatedOptionName,
 			kFailure
 		};
-
-		using OptionCallbackNoArg = std::function<int32_t(const std::string& option_name)>;
-
-		template<typename ArgumentType>
-		using OptionCallback = std::function<int32_t(const std::string& option_name, const ArgumentType& value)>;
-
 	public:
 		GeneralApplication();
 		virtual ~GeneralApplication();
 
+        void Run(int argc, char *argv[]);
 
+        bool IsRunning()
+        {
+            return is_running_;
+        }
+
+        void Stop()
+        {
+            is_running_ = false;
+        }
+
+        const std::string &GetExeFilePath()
+        {
+            return exe_file_path_;
+        }
+
+        const std::string &GetAppLicationName()
+        {
+            return app_name_;
+        }
+
+     protected:
 		virtual void SetProgramOption() {}
 		virtual void OnProgramOption(const std::string& option_name) {}
 		virtual int32_t OnParseProgramOptionEnd() { return static_cast<int32_t>(ErrorCode::kSuccess); }
@@ -68,28 +84,11 @@ namespace general
 		virtual void OnSignal(int sig_num, int value) {}
 		virtual void OnExit() {}
 
-		void Run(int argc, char* argv[]);
+     protected:
+        using OptionCallbackNoArg = std::function<int32_t(const std::string &option_name)>;
+        template <typename ArgumentType>
+        using OptionCallback = std::function<int32_t(const std::string &option_name, const ArgumentType &value)>;
 
-		bool IsRunning()
-		{
-			return is_running_;
-		}
-
-		void Stop()
-		{
-			is_running_ = false;
-		}
-
-		const std::string& GetExeFilePath()
-		{
-			return exe_file_path_;
-		}
-
-		const std::string& GetAppLicationName()
-		{
-			return app_name_;
-		}
-	protected:
 		int32_t AddOption(const char* option_name, const char* option_desc)
 		{
 			int32_t ec;

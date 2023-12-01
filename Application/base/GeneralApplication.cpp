@@ -141,12 +141,19 @@ namespace general
 			argv_ = argv;
 
 			boost::filesystem::path exe_full_path(argv_[0]);
+            exe_full_path = boost::filesystem::weakly_canonical(exe_full_path);
+			
 			exe_file_path_ = boost::filesystem::absolute(exe_full_path.parent_path()).string();
 			exe_file_name_ = exe_full_path.filename().string();
 
 			std::string default_app_name = boost::filesystem::path(exe_file_name_).stem().string();
 
 			std::string default_log_dir = exe_file_path_ + boost::filesystem::path("/").make_preferred().string() + "log";
+            //boost::filesystem::path path1(exe_file_path_);
+            //auto path2 = path1 / "log";
+            //path1 /= "log";
+            //assert(path1 == path2);
+            //default_log_dir = path1.string();
 
 			decltype(options_desc_) desc(default_app_name + " options", 210);
 			options_desc_.add(desc);

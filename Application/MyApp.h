@@ -8,11 +8,12 @@ public:
 	~MyApp();
 private:
 	virtual void SetProgramOption();
-	virtual void OnProgramOption(const std::string& option_name) {}
+	virtual void OnProgramOption(const std::string& option_name);
 	virtual int32_t OnParseProgramOptionEnd() { return static_cast<int32_t>(ErrorCode::kSuccess); }
 	virtual int32_t OnLogInit(general::Property& log_prop);
-	virtual int32_t OnInit() { return static_cast<int32_t>(ErrorCode::kSuccess); }
-	virtual int32_t OnRun() { return static_cast<int32_t>(ErrorCode::kPassed); }
+	virtual int32_t OnInit();
+    virtual int32_t OnStart();
+	virtual int32_t OnRun();
 	virtual void OnIdle(){};
 	virtual void OnSignal(int sig_num, int value) {}
 	virtual void OnExit() {}
