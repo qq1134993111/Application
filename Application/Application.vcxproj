@@ -106,6 +106,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>./base;../3rd;../3rd/spdlog/include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -141,6 +142,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>./base;../3rd;../3rd/spdlog/include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -157,6 +159,30 @@
     <ClCompile Include="MyApp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\3rd\iguana\define.h" />
+    <ClInclude Include="..\3rd\iguana\detail\charconv.h" />
+    <ClInclude Include="..\3rd\iguana\detail\dragonbox.h" />
+    <ClInclude Include="..\3rd\iguana\detail\dragonbox_to_chars.h" />
+    <ClInclude Include="..\3rd\iguana\detail\fast_float.h" />
+    <ClInclude Include="..\3rd\iguana\detail\itoa.hpp" />
+    <ClInclude Include="..\3rd\iguana\detail\string_stream.hpp" />
+    <ClInclude Include="..\3rd\iguana\detail\traits.hpp" />
+    <ClInclude Include="..\3rd\iguana\detail\utf.hpp" />
+    <ClInclude Include="..\3rd\iguana\enum_reflection.hpp" />
+    <ClInclude Include="..\3rd\iguana\error_code.h" />
+    <ClInclude Include="..\3rd\iguana\json_reader.hpp" />
+    <ClInclude Include="..\3rd\iguana\json_util.hpp" />
+    <ClInclude Include="..\3rd\iguana\json_writer.hpp" />
+    <ClInclude Include="..\3rd\iguana\prettify.hpp" />
+    <ClInclude Include="..\3rd\iguana\reflection.hpp" />
+    <ClInclude Include="..\3rd\iguana\util.hpp" />
+    <ClInclude Include="..\3rd\iguana\value.hpp" />
+    <ClInclude Include="..\3rd\iguana\xml_reader.hpp" />
+    <ClInclude Include="..\3rd\iguana\xml_util.hpp" />
+    <ClInclude Include="..\3rd\iguana\xml_writer.hpp" />
+    <ClInclude Include="..\3rd\iguana\yaml_reader.hpp" />
+    <ClInclude Include="..\3rd\iguana\yaml_util.hpp" />
+    <ClInclude Include="..\3rd\iguana\yaml_writer.hpp" />
     <ClInclude Include="..\3rd\spdlog\include\spdlog\async.h" />
     <ClInclude Include="..\3rd\spdlog\include\spdlog\async_logger-inl.h" />
     <ClInclude Include="..\3rd\spdlog\include\spdlog\async_logger.h" />
@@ -178,6 +204,7 @@
     <ClInclude Include="base\GeneralLog.h" />
     <ClInclude Include="base\Property.h" />
     <ClInclude Include="base\SingletonProcess.h" />
+    <ClInclude Include="ConfigData.h" />
     <ClInclude Include="MyApp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

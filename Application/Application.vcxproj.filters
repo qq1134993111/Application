@@ -22,6 +22,12 @@
     <Filter Include="3rd\spdlog">
       <UniqueIdentifier>{52cdb119-bc27-41ca-80cf-dffb3b63d596}</UniqueIdentifier>
     </Filter>
+    <Filter Include="3rd\iguana">
+      <UniqueIdentifier>{7f04f7b3-7854-4b1f-b136-7d2dbd1eb011}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rd\iguana\detail">
+      <UniqueIdentifier>{e91e5657-7fb3-459b-a1f0-36c30690aa46}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MyApp.cpp">
@@ -106,6 +112,81 @@
     </ClInclude>
     <ClInclude Include="..\3rd\spdlog\include\spdlog\version.h">
       <Filter>3rd\spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\define.h">
+      <Filter>3rd\iguana</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\enum_reflection.hpp">
+      <Filter>3rd\iguana</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\error_code.h">
+      <Filter>3rd\iguana</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\json_reader.hpp">
+      <Filter>3rd\iguana</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\json_util.hpp">
+      <Filter>3rd\iguana</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\json_writer.hpp">
+      <Filter>3rd\iguana</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\prettify.hpp">
+      <Filter>3rd\iguana</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\reflection.hpp">
+      <Filter>3rd\iguana</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\util.hpp">
+      <Filter>3rd\iguana</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\value.hpp">
+      <Filter>3rd\iguana</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\xml_reader.hpp">
+      <Filter>3rd\iguana</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\xml_util.hpp">
+      <Filter>3rd\iguana</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\xml_writer.hpp">
+      <Filter>3rd\iguana</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\yaml_reader.hpp">
+      <Filter>3rd\iguana</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\yaml_util.hpp">
+      <Filter>3rd\iguana</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\yaml_writer.hpp">
+      <Filter>3rd\iguana</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\detail\charconv.h">
+      <Filter>3rd\iguana\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\detail\dragonbox.h">
+      <Filter>3rd\iguana\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\detail\dragonbox_to_chars.h">
+      <Filter>3rd\iguana\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\detail\fast_float.h">
+      <Filter>3rd\iguana\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\detail\itoa.hpp">
+      <Filter>3rd\iguana\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\detail\string_stream.hpp">
+      <Filter>3rd\iguana\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\detail\traits.hpp">
+      <Filter>3rd\iguana\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\iguana\detail\utf.hpp">
+      <Filter>3rd\iguana\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigData.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
