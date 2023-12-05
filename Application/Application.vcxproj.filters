@@ -188,5 +188,11 @@
     <ClInclude Include="ConfigData.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="StacktraceHelp.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="base\NolocksLocaltime.h">
+      <Filter>base</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

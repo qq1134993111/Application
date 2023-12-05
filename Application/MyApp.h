@@ -15,7 +15,7 @@ private:
     virtual int32_t OnStart();
 	virtual int32_t OnRun();
 	virtual void OnIdle(){};
-	virtual void OnSignal(int sig_num, int value) {}
+	//virtual void OnSignal(int sig_num, int value) {}
 	virtual void OnExit() {}
 	std::string  config_path_;
 };

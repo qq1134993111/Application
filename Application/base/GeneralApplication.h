@@ -22,9 +22,8 @@
 #include <boost/optional.hpp>
 #include <boost/exception/diagnostic_information.hpp>
 
-
-
 #include "GeneralLog.h"
+#include "StacktraceHelp.h"
 
 namespace general
 {
@@ -81,7 +80,7 @@ namespace general
         virtual int32_t OnStart(){return static_cast<int32_t>(ErrorCode::kSuccess); }
 		virtual int32_t OnRun() { return static_cast<int32_t>(ErrorCode::kPassed); }
 		virtual void OnIdle();
-		virtual void OnSignal(int sig_num, int value) {}
+		virtual void OnSignal(int sig_num, int value);
 		virtual void OnExit() {}
 
      protected:
@@ -222,10 +221,13 @@ namespace general
 		}
 
 	private:
+        std::map<int32_t, std::string> sig_name_map_;
 #if defined(C_SYSTEM_GNU_LINUX) 
 		static void SignalHandler(int sig_num, siginfo_t* sig_info, void* ptr);
 		static bool InstalSignalHandler();
 #elif defined(C_SYSTEM_WINDOWS)
+        static void WindowsSignalHandler(int signal);
+        static bool InstalWindowsSignalHandler();
 #endif
 		std::string GetLongOptionName(const std::string& option_name);
 		int32_t OptionCheck(const char* option_name);

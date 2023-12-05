@@ -1,11 +1,18 @@
 #include "GeneralApplication.h"
 
+#if defined(C_SYSTEM_GNU_LINUX)
+#elif defined(C_SYSTEM_WINDOWS)
+#include <signal.h>
+#endif
+
 #include <thread>
 #include <chrono>
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/locale.hpp>
 #include "SingletonProcess.h"
+#include "NolocksLocaltime.h"
+
 namespace general
 {
 	//通用应用程序基类
@@ -17,6 +24,8 @@ namespace general
 	{
 		if (g_app_instance == nullptr)
 			return;
+
+		//snprintf 在信号处理函数中可以安全使用,printf不可以
 
 		if (sig_num == SIGUSR1)
 		{
@@ -83,10 +92,123 @@ namespace general
 			return false;
 		}
 
+		if (g_app_instance == nullptr)
+            return false;
+
+		g_app_instance->sig_name_map_[SIGABRT] = "SIGABRT";//Core    Abort signal from abort(3)
+        g_app_instance->sig_name_map_[SIGBUS] = "SIGBUS";  //Core    Bus error (bad memory access)
+        g_app_instance->sig_name_map_[SIGFPE] = "SIGFPE";  //Core    Floating-point exception
+        g_app_instance->sig_name_map_[SIGILL] = "SIGILL";  //Core    Illegal Instruction
+        g_app_instance->sig_name_map_[SIGSEGV] = "SIGSEGV";//Core    Invalid memory reference
+
+		for (auto &apair : g_app_instance->sig_name_map_)
+		{
+            ret = sigaction(apair.first, &sig_action, nullptr);
+            if (ret != 0)
+            {
+                LOG_ERROR("sigaction on {2}[{3}]  failed,error:{0},error string:{1}", errno, strerror(errno),apair.first, apair.second);
+                return false;
+            }
+		}
+
 		return true;
 	}
 
 #elif defined(C_SYSTEM_WINDOWS)
+    void GeneralApplication::WindowsSignalHandler(int signal)
+    {
+        if (g_app_instance == nullptr)
+            return;
+
+        switch (signal)
+        {
+        case SIGINT://2
+		{
+            LOG_INFO("The program receives a signal {}[{}] ,Ctrl+C interrupt", signal, "SIGINT");
+		}
+		break;
+        case SIGILL://4
+        {
+            LOG_INFO("The program receives a signal {}[{}] ,illegal instruction - invalid function image", signal, "SIGILL");
+        }
+		break;
+        case SIGFPE: //8
+        {
+            LOG_INFO("The program receives a signal {}[{}] ,floating point exception", signal,"SIGFPE");
+        }
+		break;
+        case SIGSEGV://11
+        {
+            LOG_INFO("The program receives a signal {}[{}] ,segment violation", signal, "SIGSEGV");
+        }
+		break;
+        case SIGTERM://5
+        {
+            LOG_INFO("The program receives a signal {}[{}] ,Software termination signal from kill", signal, "SIGTERM");
+        }
+		break;
+        case SIGBREAK://21
+        {
+            LOG_INFO("The program receives a signal {}[{}] ,Ctrl-Break sequence", signal, "SIGBREAK");
+        }
+		break;
+        case SIGABRT://22
+        {
+            LOG_INFO("The program receives a signal {}[{}] ,abnormal termination triggered by abort call(Abort)", signal, "SIGABRT");
+
+        }
+		break;
+        case SIGABRT_COMPAT://6
+		{
+            LOG_INFO("The program receives a signal {}[{}] ,SIGABRT compatible with other platforms, same as SIGABRT",signal, "SIGABRT");
+
+        }
+		break;
+        default:
+            LOG_INFO("The program receives a signal {}",signal);
+            break;
+        }
+
+        g_app_instance->OnSignal(signal,0);
+    }
+    bool GeneralApplication::InstalWindowsSignalHandler()
+    {
+        // Signal types
+//#define SIGINT 2    // interrupt(Ctrl+C中断)
+//#define SIGILL 4    // illegal instruction - invalid function image(非法指令)
+//#define SIGFPE 8    // floating point exception(浮点异常)  浮点错误
+//#define SIGSEGV 11  // segment violation(段错误) 非法存储区访问
+//#define SIGTERM 5   // Software termination signal from kill(Kill发出的软件终止) 终止请求
+//#define SIGBREAK 21 // Ctrl-Break sequence(Ctrl+Break中断) 
+//#define SIGABRT 22  // abnormal termination triggered by abort call(Abort)  异常终止
+//#define SIGABRT_COMPAT  6   // SIGABRT compatible with other platforms, same as SIGABRT
+
+		if (g_app_instance == nullptr)
+            return false;
+
+		//windows 信号处理貌似没有异步信号安全的问题
+		
+		//g_app_instance->sig_name_map_[SIGINT] = "SIGINT";
+        g_app_instance->sig_name_map_[SIGILL] = "SIGILL";
+        g_app_instance->sig_name_map_[SIGFPE] = "SIGFPE";
+        g_app_instance->sig_name_map_[SIGSEGV] = "SIGSEGV";
+        g_app_instance->sig_name_map_[SIGTERM] = "SIGTERM";
+        g_app_instance->sig_name_map_[SIGBREAK] = "SIGBREAK";
+        g_app_instance->sig_name_map_[SIGABRT] = "SIGABRT";
+        g_app_instance->sig_name_map_[SIGABRT_COMPAT] = "SIGABRT_COMPAT";
+   
+
+        signal(SIGINT, &GeneralApplication::WindowsSignalHandler);
+        signal(SIGILL, &GeneralApplication::WindowsSignalHandler);
+        signal(SIGFPE, &GeneralApplication::WindowsSignalHandler);
+        signal(SIGSEGV, &GeneralApplication::WindowsSignalHandler);
+        signal(SIGTERM, &GeneralApplication::WindowsSignalHandler);
+        signal(SIGBREAK, &GeneralApplication::WindowsSignalHandler);
+        signal(SIGABRT, &GeneralApplication::WindowsSignalHandler);
+        signal(SIGABRT_COMPAT, &GeneralApplication::WindowsSignalHandler);
+
+		return true;
+    }
 #endif
 	GeneralApplication::GeneralApplication()
 	{
@@ -124,7 +246,38 @@ namespace general
 		std::this_thread::sleep_for(std::chrono::milliseconds(200));
 	}
 
-	void GeneralApplication::Run(int argc, char* argv[])
+    void GeneralApplication::OnSignal(int sig_num, int value)
+    {
+        if (g_app_instance == nullptr)
+            return;
+
+		auto it = g_app_instance->sig_name_map_.find(sig_num);
+        if ( it== g_app_instance->sig_name_map_.end())
+            return;
+
+#if defined(C_SYSTEM_GNU_LINUX)
+        timespec ts;
+        timespec_get(&ts, TIME_UTC);
+        struct tm tm1 = {0};
+        nolocks_localtime(&tm1, ts.tv_sec);
+        char sz_time[64] = {0};
+        strftime(sz_time, sizeof(sz_time), "%Y%m%d%H%M%S", &tm1);
+        char sz_file_name[256] = {0};
+        snprintf(sz_file_name, sizeof(sz_file_name), "%s_%s%ld_%ld_%lld_%s_%ld.dump", 
+			GetAppLicationName().c_str(),sz_time, ts.tv_nsec, spdlog::details::os::pid(), spdlog::details::os::thread_id(), it->second.c_str(),sig_num);
+
+        boost::stacktrace::safe_dump_to(sz_file_name); // windows上无效 // This code causing deadlocks on some platforms. Disabled
+#elif defined(C_SYSTEM_WINDOWS)
+        //char sz_mem[10240] = {0};
+        //auto size=boost::stacktrace::safe_dump_to(sz_mem, 10240);
+        std::stringstream ss; 
+        ss << boost::stacktrace::stacktrace();
+        std::cout << ss.str() << "\n";
+        LOG_INFO("Stack trace:\n{}",ss.str());
+#endif
+    }
+
+    void GeneralApplication::Run(int argc, char *argv[])
 	{
 		CallOnExit on_exit(
 			[]()
@@ -315,7 +468,24 @@ namespace general
                     return static_cast<int32_t>(ErrorCode::kSuccess);
                 });
 
+			AddOptionWithArgument<std::string>("display_stacktrace",
+                                  "Display the application coredump stack, specify the dump file path");
 			//AddOptionWithArgument<std::string>("name,n", "set the application name,default exe name", default_app_name, &app_name_);
+
+		    std::set_terminate([]() {
+                try
+                {
+                    boost::stacktrace::stacktrace st = boost::stacktrace::stacktrace();
+                    std::string s = boost::stacktrace::to_string(st);
+
+                    std::cerr << s << "\n";
+                    LOG_ERROR("terminate:{}", s);
+                }
+                catch (...)
+                {
+                }
+                std::abort();
+            });
 
 			SetProgramOption();
 			if (!ParseProgramOption())
@@ -392,6 +562,7 @@ namespace general
 				return;
 			}
 #elif defined(C_SYSTEM_WINDOWS)
+            InstalWindowsSignalHandler();
 #endif
 
 	
@@ -462,9 +633,9 @@ namespace general
 		}
 		catch (...)
 		{
-			//std::cout << "application throw exception in <Run> :" << boost::current_exception_diagnostic_information() << std::endl;
+			std::cout << "application throw exception in <Run> :" << boost::current_exception_diagnostic_information() << std::endl;
 
-			LOG_ERROR("application throw exception in <Run> :{0}", boost::current_exception_diagnostic_information());
+			LOG_ERROR("application throw exception in <Run> :{0}",boost::current_exception_diagnostic_information());
 
 			try
 			{
@@ -472,7 +643,7 @@ namespace general
 			}
 			catch (...)
 			{
-				LOG_ERROR("application throw exception in <OnExit> :{0}", boost::current_exception_diagnostic_information());
+                LOG_ERROR("application throw exception in <OnExit> :{0}",boost::current_exception_diagnostic_information());
 			}
 		}
 	}
@@ -514,6 +685,34 @@ namespace general
 			//std::cout << "----------------------------------------------------------\n";
 			return false;
 		}
+
+		if (options_vm_.count("display_stacktrace"))
+        {
+            std::string dump_file_path = GetOptionArgument<std::string>("display_stacktrace");
+            boost::filesystem::path dump_path = dump_file_path;
+            dump_path = boost::filesystem::weakly_canonical(dump_path);
+            std::cout << "dump file path:" << dump_path.string() << "\n";
+            if (!boost::filesystem::exists(dump_path))
+            {
+                std::cout << "dump file not exists\n";
+            }
+            else
+            {
+                std::ifstream ifs(dump_path.string().c_str());
+                if (!ifs.is_open())
+                {
+                    std::cout << "dump file open field:" << errno << "," << strerror(errno) << "\n";
+                    return false;
+                }
+                boost::stacktrace::stacktrace st = boost::stacktrace::stacktrace::from_dump(ifs);
+                std::cout << "Previous run crashed:\n" << st << std::endl;
+
+                // cleaning up
+                ifs.close();
+                //boost::filesystem::remove(dump_path);
+            }
+			return false;
+        }
 
 		if (options_vm_.count("log-to-console"))
 		{
