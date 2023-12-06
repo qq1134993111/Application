@@ -205,9 +205,9 @@
     <ClInclude Include="base\NolocksLocaltime.h" />
     <ClInclude Include="base\Property.h" />
     <ClInclude Include="base\SingletonProcess.h" />
+    <ClInclude Include="base\StacktraceHelp.h" />
     <ClInclude Include="ConfigData.h" />
     <ClInclude Include="MyApp.h" />
-    <ClInclude Include="StacktraceHelp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

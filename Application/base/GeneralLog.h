@@ -98,6 +98,13 @@ namespace general
                 s_logger->set_pattern(pattern);
             }
 		}
+        static inline void Flush()
+        {
+            if (s_logger)
+            {
+                s_logger->flush();
+            }
+        }
 
 		static inline void FlushOn(level_enum log_level = spdlog::level::trace)
 		{
@@ -261,7 +268,8 @@ namespace general
 
 #define LOG_INIT(prop)           general::GeneralLog::Init(prop)
 #define LOG_SET_LEVEL(l)         general::GeneralLog::SetLevel(l)
-#define LOG_SET_PATTERN(s)       general::GeneralLog::SetPattern(s);
+#define LOG_SET_PATTERN(s)       general::GeneralLog::SetPattern(s)
+#define LOG_FLUSH()              general::GeneralLog::Flush()
 #define LOG_FLUSH_ON(l)          general::GeneralLog::FlushOn(l)
 #define LOG_FLUSH_ON_ALL()       general::GeneralLog::FlushOn()
 #define LOG_SET_ERROR_HANDLE(cb) general::GeneralLog::SetErrorHandler(cb)

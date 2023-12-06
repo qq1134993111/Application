@@ -222,6 +222,8 @@ namespace general
 	{
 		singleton_process_.reset();
 		g_app_instance = nullptr;
+        LOG_INFO("~GeneralApplication");
+        LOG_FLUSH();
         LOG_SHUTDOWN();
 	}
 
@@ -272,8 +274,9 @@ namespace general
         //auto size=boost::stacktrace::safe_dump_to(sz_mem, 10240);
         std::stringstream ss; 
         ss << boost::stacktrace::stacktrace();
-        std::cout << ss.str() << "\n";
+        std::cerr << ss.str() << "\n";
         LOG_INFO("Stack trace:\n{}",ss.str());
+        LOG_FLUSH();
 #endif
     }
 
@@ -479,7 +482,8 @@ namespace general
                     std::string s = boost::stacktrace::to_string(st);
 
                     std::cerr << s << "\n";
-                    LOG_ERROR("terminate:{}", s);
+                    LOG_ERROR("terminate:\n{}", s);
+                    LOG_FLUSH();
                 }
                 catch (...)
                 {
@@ -781,12 +785,12 @@ namespace general
 	void GeneralApplication::RedirectInputOutput()
 	{
 #if defined(C_SYSTEM_GNU_LINUX)
-		//close(STDIN_FILENO);
-		//close(STDIN_FILENO);
-		//close(STDIN_FILENO);
-		//open("/dev/null", O_RDWR);
-		//open("/dev/null", O_RDWR);
-		//open("/dev/null", O_RDWR);
+		close(STDIN_FILENO);
+		close(STDIN_FILENO);
+		close(STDIN_FILENO);
+		open("/dev/null", O_RDWR);
+		open("/dev/null", O_RDWR);
+		open("/dev/null", O_RDWR);
 #elif defined(C_SYSTEM_WINDOWS)
 #endif
 }

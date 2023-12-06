@@ -1,10 +1,13 @@
 #pragma once
 
+#define BOOST_ENABLE_ASSERT_DEBUG_HANDLER
 
+//Better asserts
 // BOOST_ENABLE_ASSERT_DEBUG_HANDLER is defined for the whole project
 #include <boost/stacktrace.hpp>
 #include <iostream>  // std::cerr
 #include <stdexcept> // std::logic_error
+//#include <boost/assert.hpp>
 namespace boost
 {
 inline void assertion_failed_msg(char const *expr, char const *msg, char const *function, char const * /*file*/,
@@ -28,6 +31,10 @@ inline void assertion_failed(char const *expr, char const *function, char const 
 在assertion_failed_msg中，我们输出了由断言宏和boost::stacktrace::stacktrace提供的信息。
 */
 
+
+
+
+//Exceptions with stacktrace
 #include <boost/stacktrace.hpp>
 #include <boost/exception/all.hpp>
 // 声明一个 boost::error_info  typedef，用于保存堆栈跟踪信息。
@@ -57,3 +64,63 @@ try {
 }
 */
 
+#define STACKTRACE_WRAP_BLOCK(statements)                                                                              \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        try                                                                                                            \
+        {                                                                                                              \
+            statements                                                                                                 \
+        }                                                                                                              \
+        catch (...)                                                                                                    \
+        {                                                                                                              \
+            std::exception const *se = boost::current_exception_cast<std::exception const>();                          \
+            if (se != nullptr)                                                                                         \
+            {                                                                                                          \
+                const boost::stacktrace::stacktrace *st = boost::get_error_info<traced>(*se);                          \
+                if (st != nullptr)                                                                                     \
+                {                                                                                                      \
+                    throw;                                                                                             \
+                }                                                                                                      \
+                else                                                                                                   \
+                {                                                                                                      \
+                    throw boost::enable_error_info(*se) << traced(boost::stacktrace::stacktrace());                    \
+                }                                                                                                      \
+            }                                                                                                          \
+            boost::exception const *be = boost::current_exception_cast<boost::exception const>();                      \
+            if (be != nullptr)                                                                                         \
+            {                                                                                                          \
+                const boost::stacktrace::stacktrace *st = boost::get_error_info<traced>(*be);                          \
+                if (st != nullptr)                                                                                     \
+                {                                                                                                      \
+                    throw;                                                                                             \
+                }                                                                                                      \
+                else                                                                                                   \
+                {                                                                                                      \
+                    *be << traced(boost::stacktrace::stacktrace());                                                    \
+                    throw;                                                                                             \
+                }                                                                                                      \
+            }                                                                                                          \
+            throw;                                                                                                     \
+        }                                                                                                              \
+    } while (0)
+
+
+//Handle terminates
+#include <cstdlib>   // std::abort
+#include <exception> // std::set_terminate
+#include <iostream>  // std::cerr
+
+#include <boost/stacktrace.hpp>
+
+inline void my_terminate_handler()
+{
+    try
+    {
+        std::cerr << boost::stacktrace::stacktrace();
+    }
+    catch (...)
+    {
+    }
+    std::abort();
+}
+//std::set_terminate(&my_terminate_handler);
