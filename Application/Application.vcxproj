@@ -133,7 +133,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -153,6 +153,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="base\DumpHelper.cpp" />
     <ClCompile Include="base\GeneralApplication.cpp" />
     <ClCompile Include="base\GeneralLog.cpp" />
     <ClCompile Include="base\SingletonProcess.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="..\3rd\spdlog\include\spdlog\tweakme.h" />
     <ClInclude Include="..\3rd\spdlog\include\spdlog\version.h" />
     <ClInclude Include="base\CPreDefined.h" />
+    <ClInclude Include="base\DumpHelper.h" />
     <ClInclude Include="base\GeneralApplication.h" />
     <ClInclude Include="base\GeneralLog.h" />
     <ClInclude Include="base\NolocksLocaltime.h" />

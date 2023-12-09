@@ -12,6 +12,7 @@
 #include <boost/locale.hpp>
 #include "SingletonProcess.h"
 #include "NolocksLocaltime.h"
+#include "DumpHelper.h"
 
 namespace general
 {
@@ -293,6 +294,9 @@ namespace general
 		(void)on_exit;
 		try
 		{
+#if defined(C_SYSTEM_WINDOWS)
+            DumpHelper::EnableDump("./CrashDump");
+#endif
 			argc_ = argc;
 			argv_ = argv;
 

@@ -45,6 +45,9 @@
     <ClCompile Include="Application.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="base\DumpHelper.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyApp.h">
@@ -192,6 +195,9 @@
       <Filter>base</Filter>
     </ClInclude>
     <ClInclude Include="base\StacktraceHelp.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="base\DumpHelper.h">
       <Filter>base</Filter>
     </ClInclude>
   </ItemGroup>
