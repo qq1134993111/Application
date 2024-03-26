@@ -295,38 +295,77 @@ namespace general
 #define LOG_ACTIVE_LEVEL LOG_LEVEL_TRACE
 #endif
 
+//#ifdef _WIN32
+//#define __FILENAME__ (strrchr(__FILE__, '\\') ? (strrchr(__FILE__, '\\') + 1) : __FILE__)
+//#else
+//#define __FILENAME__ (strrchr(__FILE__, '/') ? (strrchr(__FILE__, '/') + 1) : __FILE__)
+//#endif
+
+#include <string_view>
+constexpr std::string_view ExtractFileName(std::string_view path)
+{
+        for (auto i = path.size(); i > 0; i--)
+        {
+            if (path[i - 1] == '/' || path[i - 1] == '\\')
+            {
+                return path.substr(i);
+            }
+        }
+        return path;
+}
+
+constexpr std::string_view ExtractFileName(std::string_view path, std::string_view project_dir_name)
+{
+        auto size = path.find(project_dir_name);
+        if (size != path.npos)
+        {
+            return path.substr(size);
+        }
+
+        return ExtractFileName(path);
+}
+
+//#define PROJECT_DIR_NAME "Application"
+
+#ifdef PROJECT_DIR_NAME
+#define __FILENAME__ (ExtractFileName(__FILE__,PROJECT_DIR_NAME).data())
+#else
+#define __FILENAME__ (ExtractFileName(__FILE__).data())
+#endif // !PROJECT_NAME
+
+
 #if LOG_ACTIVE_LEVEL <= LOG_LEVEL_TRACE
-#define LOG_TRACE(...) general::GeneralLog::Trace(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
+#define LOG_TRACE(...) general::GeneralLog::Trace(spdlog::source_loc{__FILENAME__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
 #else
 #define LOG_TRACE(...) (void)0
 #endif
 
 #if LOG_ACTIVE_LEVEL <= LOG_LEVEL_DEBUG
-#define LOG_DEBUG(...) general::GeneralLog::Debug(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
+#define LOG_DEBUG(...) general::GeneralLog::Debug(spdlog::source_loc{__FILENAME__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
 #else
 #define LOG_DEBUG(...) (void)0
 #endif
 
 #if LOG_ACTIVE_LEVEL <= LOG_LEVEL_INFO
-#define LOG_INFO(...) general::GeneralLog::Info(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
+#define LOG_INFO(...) general::GeneralLog::Info(spdlog::source_loc{__FILENAME__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
 #else
 #define LOG_INFO(...) (void)0
 #endif
 
 #if LOG_ACTIVE_LEVEL <= LOG_LEVEL_WARN
-#define LOG_WARN(...) general::GeneralLog::Warn(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
+#define LOG_WARN(...) general::GeneralLog::Warn(spdlog::source_loc{__FILENAME__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
 #else
 #define LOG_WARN(...) (void)0
 #endif
 
 #if LOG_ACTIVE_LEVEL <= LOG_LEVEL_ERROR
-#define LOG_ERROR(...) general::GeneralLog::Error(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
+#define LOG_ERROR(...) general::GeneralLog::Error(spdlog::source_loc{__FILENAME__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
 #else
 #define LOG_ERROR(...) (void)0
 #endif
 
 #if LOG_ACTIVE_LEVEL <= LOG_LEVEL_CRITICAL
-#define LOG_CRITICAL(...) general::GeneralLog::Critical(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
+#define LOG_CRITICAL(...) general::GeneralLog::Critical(spdlog::source_loc{__FILENAME__, __LINE__, SPDLOG_FUNCTION}, __VA_ARGS__)
 #else
 #define LOG_CRITICAL(...) (void)0
 #endif
