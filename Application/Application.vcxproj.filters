@@ -28,6 +28,12 @@
     <Filter Include="3rd\iguana\detail">
       <UniqueIdentifier>{e91e5657-7fb3-459b-a1f0-36c30690aa46}</UniqueIdentifier>
     </Filter>
+    <Filter Include="net">
+      <UniqueIdentifier>{919d87e5-cf76-4a6b-ba54-75df31c7208c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\detail">
+      <UniqueIdentifier>{98f47cce-d1c3-48c4-909f-0d74157d38a9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MyApp.cpp">
@@ -199,6 +205,66 @@
     </ClInclude>
     <ClInclude Include="base\DumpHelper.h">
       <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="net\detail\ClientImpl.h">
+      <Filter>net\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="net\detail\CloseCp.hpp">
+      <Filter>net\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="net\detail\ConnectCp.hpp">
+      <Filter>net\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="net\detail\ConnectTimeoutCp.hpp">
+      <Filter>net\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="net\detail\HeartbeatTimerCp.hpp">
+      <Filter>net\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="net\detail\IoServiceCp.hpp">
+      <Filter>net\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="net\detail\IoServicePool.hpp">
+      <Filter>net\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="net\detail\Listener.hpp">
+      <Filter>net\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="net\detail\NetCommon.hpp">
+      <Filter>net\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="net\detail\Object.hpp">
+      <Filter>net\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="net\detail\ReconnectTimerCp.hpp">
+      <Filter>net\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="net\detail\RecvTimerCp.hpp">
+      <Filter>net\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="net\detail\ShutDownCp.hpp">
+      <Filter>net\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="net\detail\SocketCp.hpp">
+      <Filter>net\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="net\detail\TcpRecvOp.hpp">
+      <Filter>net\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="net\detail\TcpSendOp.hpp">
+      <Filter>net\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="net\detail\ThisThreadIdCp.hpp">
+      <Filter>net\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="net\detail\TypeTraits.hpp">
+      <Filter>net\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="net\detail\UserDataCp.hpp">
+      <Filter>net\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="net\TcpClient.h">
+      <Filter>net</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

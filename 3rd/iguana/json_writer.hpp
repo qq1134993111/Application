@@ -162,7 +162,8 @@ IGUANA_INLINE void render_json_value(Stream &ss, const T &t) {
       return n;
     };
     size_t len = get_length(n);
-    ss.append(std::begin(t), len);
+    //ss.append(std::begin(t), len);
+    ss.append(&t[0], len);
     ss.push_back('"');
   }
   else {

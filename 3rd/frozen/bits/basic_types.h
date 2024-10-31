@@ -23,12 +23,12 @@
 #ifndef FROZEN_LETITGO_BASIC_TYPES_H
 #define FROZEN_LETITGO_BASIC_TYPES_H
 
+#include "frozen/bits/exceptions.h"
+
 #include <array>
 #include <iterator>
 #include <string>
 #include <utility>
-
-#include "frozen/bits/exceptions.h"
 
 namespace frozen {
 
@@ -38,13 +38,12 @@ namespace bits {
 // of N=0
 struct ignored_arg {};
 
-template <class T, std::size_t N>
-class cvector {
-  T data[N] = {};  // zero-initialization for scalar type T, default-initialized
-                   // otherwise
+template <class T, std::size_t N> class cvector {
+  T data[N] = {}; // zero-initialization for scalar type T, default-initialized
+                  // otherwise
   std::size_t dsize = 0;
 
- public:
+public:
   // Container typdefs
   using value_type = T;
   using reference = value_type &;
@@ -59,7 +58,8 @@ class cvector {
   // Constructors
   constexpr cvector(void) = default;
   constexpr cvector(size_type count, const T &value) : dsize(count) {
-    for (std::size_t i = 0; i < N; ++i) data[i] = value;
+    for (std::size_t i = 0; i < N; ++i)
+      data[i] = value;
   }
 
   // Iterators
@@ -86,10 +86,9 @@ class cvector {
   constexpr void clear() { dsize = 0; }
 };
 
-template <class T, std::size_t N>
-class carray {
-  T data_[N] = {};  // zero-initialization for scalar type T,
-                    // default-initialized otherwise
+template <class T, std::size_t N> class carray {
+  T data_[N] = {}; // zero-initialization for scalar type T, default-initialized
+                   // otherwise
 
   template <std::size_t M, std::size_t... I>
   constexpr carray(T const (&init)[M], std::index_sequence<I...>)
@@ -98,7 +97,7 @@ class carray {
   constexpr carray(Iter iter, std::index_sequence<I...>)
       : data_{((void)I, *iter++)...} {}
 
- public:
+public:
   // Container typdefs
   using value_type = T;
   using reference = value_type &;
@@ -194,12 +193,13 @@ class carray {
 
   // Modifiers
   constexpr void fill(const value_type &val) {
-    for (std::size_t i = 0; i < N; ++i) data_[i] = val;
+    for (std::size_t i = 0; i < N; ++i)
+      data_[i] = val;
   }
 };
-template <class T>
-class carray<T, 0> {
- public:
+template <class T> class carray<T, 0> {
+
+public:
   // Container typdefs
   using value_type = T;
   using reference = value_type &;
@@ -217,8 +217,8 @@ class carray<T, 0> {
   constexpr carray(void) = default;
 };
 
-}  // namespace bits
+} // namespace bits
 
-}  // namespace frozen
+} // namespace frozen
 
 #endif
