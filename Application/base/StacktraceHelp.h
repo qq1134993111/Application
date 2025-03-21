@@ -1,13 +1,19 @@
 #pragma once
 
-#define BOOST_ENABLE_ASSERT_DEBUG_HANDLER
-
-//Better asserts
-// BOOST_ENABLE_ASSERT_DEBUG_HANDLER is defined for the whole project
-#include <boost/stacktrace.hpp>
 #include <iostream>  // std::cerr
 #include <stdexcept> // std::logic_error
 //#include <boost/assert.hpp>
+
+
+// 编译期判断 Boost 版本
+#if BOOST_VERSION >= 106500
+
+#define BOOST_ENABLE_ASSERT_DEBUG_HANDLER
+//Better asserts
+// BOOST_ENABLE_ASSERT_DEBUG_HANDLER is defined for the whole project
+
+#include <boost/stacktrace.hpp>
+
 namespace boost
 {
 inline void assertion_failed_msg(char const *expr, char const *msg, char const *function, char const * /*file*/,
@@ -30,7 +36,6 @@ inline void assertion_failed(char const *expr, char const *function, char const 
 现在所有的BOOST_ASSERT和BOOST_ASSERT_MSG在失败的情况下都将调用我们的函数assertion_failed和assertion_failed_msg。
 在assertion_failed_msg中，我们输出了由断言宏和boost::stacktrace::stacktrace提供的信息。
 */
-
 
 
 
@@ -124,3 +129,6 @@ inline void my_terminate_handler()
     std::abort();
 }
 //std::set_terminate(&my_terminate_handler);
+
+#endif
+

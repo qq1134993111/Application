@@ -259,6 +259,7 @@ namespace general
             return;
 
 #if defined(C_SYSTEM_GNU_LINUX)
+      #if BOOST_VERSION >= 106500
         timespec ts;
         timespec_get(&ts, TIME_UTC);
         struct tm tm1 = {0};
@@ -268,16 +269,19 @@ namespace general
         char sz_file_name[256] = {0};
         snprintf(sz_file_name, sizeof(sz_file_name), "%s_%s%ld_%ld_%lld_%s_%ld.dump", 
 			GetAppLicationName().c_str(),sz_time, ts.tv_nsec, spdlog::details::os::pid(), spdlog::details::os::thread_id(), it->second.c_str(),sig_num);
-
         boost::stacktrace::safe_dump_to(sz_file_name); // windows上无效 // This code causing deadlocks on some platforms. Disabled
+      #endif
 #elif defined(C_SYSTEM_WINDOWS)
         //char sz_mem[10240] = {0};
         //auto size=boost::stacktrace::safe_dump_to(sz_mem, 10240);
+      #if BOOST_VERSION >= 106500
         std::stringstream ss; 
         ss << boost::stacktrace::stacktrace();
         std::cerr << ss.str() << "\n";
         LOG_INFO("Stack trace:\n{}",ss.str());
         LOG_FLUSH();
+      #endif
+
 #endif
     }
 
@@ -301,8 +305,12 @@ namespace general
 			argv_ = argv;
 
 			boost::filesystem::path exe_full_path(argv_[0]);
+#if BOOST_VERSION >= 106200 
             exe_full_path = boost::filesystem::weakly_canonical(exe_full_path);
-			
+#else
+			exe_full_path = boost::filesystem::absolute(exe_full_path);
+#endif
+
 			exe_file_path_ = boost::filesystem::absolute(exe_full_path.parent_path()).string();
 			exe_file_name_ = exe_full_path.filename().string();
 
@@ -479,21 +487,23 @@ namespace general
                                   "Display the application coredump stack, specify the dump file path");
 			//AddOptionWithArgument<std::string>("name,n", "set the application name,default exe name", default_app_name, &app_name_);
 
-		    std::set_terminate([]() {
-                try
-                {
-                    boost::stacktrace::stacktrace st = boost::stacktrace::stacktrace();
-                    std::string s = boost::stacktrace::to_string(st);
+			std::set_terminate([]() {
+#if BOOST_VERSION >= 106500
+				try
+				{
+					boost::stacktrace::stacktrace st = boost::stacktrace::stacktrace();
+					std::string s = boost::stacktrace::to_string(st);
 
-                    std::cerr << s << "\n";
-                    LOG_ERROR("terminate:\n{}", s);
-                    LOG_FLUSH();
-                }
-                catch (...)
-                {
-                }
-                std::abort();
-            });
+					std::cerr << s << "\n";
+					LOG_ERROR("terminate:\n{}", s);
+					LOG_FLUSH();
+				}
+				catch (...)
+				{
+				}
+#endif
+				std::abort();
+			});
 
 			SetProgramOption();
 			if (!ParseProgramOption())
@@ -696,6 +706,7 @@ namespace general
 
 		if (options_vm_.count("display_stacktrace"))
         {
+#if BOOST_VERSION >= 106500
             std::string dump_file_path = GetOptionArgument<std::string>("display_stacktrace");
             boost::filesystem::path dump_path = dump_file_path;
             dump_path = boost::filesystem::weakly_canonical(dump_path);
@@ -719,6 +730,7 @@ namespace general
                 ifs.close();
                 //boost::filesystem::remove(dump_path);
             }
+#endif
 			return false;
         }
 
@@ -732,7 +744,11 @@ namespace general
 		if (log_dir)
 		{
             boost::filesystem::path dir = *log_dir + boost::filesystem::path("/").string() + GetAppLicationName() + ".log";
+#if BOOST_VERSION >= 106200 
             dir = boost::filesystem::weakly_canonical(dir);
+#else
+			dir = boost::filesystem::absolute(dir);
+#endif
             std::cout << "log-dir:" << dir.string() << "\n";
 
 			log_prop_.SetValue(log_config_key::kLoggerFilename,dir.string());

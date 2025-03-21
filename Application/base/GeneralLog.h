@@ -295,12 +295,8 @@ namespace general
 #define LOG_ACTIVE_LEVEL LOG_LEVEL_TRACE
 #endif
 
-//#ifdef _WIN32
-//#define __FILENAME__ (strrchr(__FILE__, '\\') ? (strrchr(__FILE__, '\\') + 1) : __FILE__)
-//#else
-//#define __FILENAME__ (strrchr(__FILE__, '/') ? (strrchr(__FILE__, '/') + 1) : __FILE__)
-//#endif
 
+#if __cplusplus >= 201703L
 #include <string_view>
 constexpr std::string_view ExtractFileName(std::string_view path)
 {
@@ -328,10 +324,19 @@ constexpr std::string_view ExtractFileName(std::string_view path, std::string_vi
 //#define PROJECT_DIR_NAME "Application"
 
 #ifdef PROJECT_DIR_NAME
-#define __FILENAME__ (ExtractFileName(__FILE__,PROJECT_DIR_NAME).data())
+  #define __FILENAME__ (ExtractFileName(__FILE__,PROJECT_DIR_NAME).data())
 #else
-#define __FILENAME__ (ExtractFileName(__FILE__).data())
+  #define __FILENAME__ (ExtractFileName(__FILE__).data())
 #endif // !PROJECT_NAME
+#else
+
+#ifdef _WIN32
+   #define __FILENAME__ (strrchr(__FILE__, '\\') ? (strrchr(__FILE__, '\\') + 1) : __FILE__)
+#else
+   #define __FILENAME__ (strrchr(__FILE__, '/') ? (strrchr(__FILE__, '/') + 1) : __FILE__)
+#endif
+
+#endif
 
 
 #if LOG_ACTIVE_LEVEL <= LOG_LEVEL_TRACE

@@ -39,10 +39,17 @@ bool DumpHelper::EnableDump(std::string directory, std::string file_name)
     path = directory;
     if (path.is_relative())
     {
+#if BOOST_VERSION >= 106200 
         path = boost::filesystem::absolute(path, ec);
+#else
+		path = boost::filesystem::absolute(path);
+#endif
     }
 
-    path = boost::filesystem::weakly_canonical(path, ec);
+#if BOOST_VERSION >= 106200 
+	path = boost::filesystem::weakly_canonical(path, ec);
+#endif
+
     if (boost::filesystem::exists(path,ec))
     {
         if (!boost::filesystem::is_directory(path, ec))
