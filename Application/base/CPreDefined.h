@@ -35,15 +35,15 @@ extern "C"{
 #define C_ARCHITECTURE_I386 1
 #define C_ARCHITECTURE "i386"
 /* #endif //defined(i386) || defined(__i386) || defined(__i386__) || defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__) || defined(__i386) || defined(__i386) || defined(__IA32__) || defined(_M_I86) || defined(_M_IX86) || defined(_M_IX86) || defined(__X86__) || defined(_X86_) || defined(__THW_INTEL__) || defined(__I86__) || defined(__I86__) || defined(__INTEL__) || defined(__386) || defined(_M_IX86) || defined(__I86__) */
-#elif defined(__arm__) || defined(__thumb__) || defined(__TARGET_ARCH_ARM) || defined(__TARGET_ARCH_THUMB) || defined(_ARM) || defined(_M_ARM) || defined(_M_ARMT) || defined(__arm) || defined(_M_ARM)defined(__ARM_ARCH_2__) || defined(__ARM_ARCH_3__) || defined(__ARM_ARCH_3M__) || defined(__ARM_ARCH_4T__) || defined(__TARGET_ARM_4T) || defined(__ARM_ARCH_5__) || defined(__ARM_ARCH_5E__) || defined(__ARM_ARCH_5T__) || defined(__ARM_ARCH_5TE__) || defined(__ARM_ARCH_5TEJ__) || defined(__ARM_ARCH_6__) || defined(__ARM_ARCH_6J__) || defined(__ARM_ARCH_6K__) || defined(__ARM_ARCH_6Z__) || defined(__ARM_ARCH_6ZK__) || defined(__ARM_ARCH_6T2__) || defined(__ARM_ARCH_7__) || defined(__ARM_ARCH_7A__) || defined(__ARM_ARCH_7R__) || defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7S__)
+#elif defined(__arm__) || defined(__thumb__) || defined(__TARGET_ARCH_ARM) || defined(__TARGET_ARCH_THUMB) || defined(_ARM) || defined(_M_ARM) || defined(_M_ARMT) || defined(__arm) || defined(_M_ARM)||defined(__ARM_ARCH_2__) || defined(__ARM_ARCH_3__) || defined(__ARM_ARCH_3M__) || defined(__ARM_ARCH_4T__) || defined(__TARGET_ARM_4T) || defined(__ARM_ARCH_5__) || defined(__ARM_ARCH_5E__) || defined(__ARM_ARCH_5T__) || defined(__ARM_ARCH_5TE__) || defined(__ARM_ARCH_5TEJ__) || defined(__ARM_ARCH_6__) || defined(__ARM_ARCH_6J__) || defined(__ARM_ARCH_6K__) || defined(__ARM_ARCH_6Z__) || defined(__ARM_ARCH_6ZK__) || defined(__ARM_ARCH_6T2__) || defined(__ARM_ARCH_7__) || defined(__ARM_ARCH_7A__) || defined(__ARM_ARCH_7R__) || defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7S__)
 #define C_ARCHITECTURE_ARM 1
 #define C_ARCHITECTURE "ARM"
 /* #endif //defined(__arm__) || defined(__thumb__) || defined(__TARGET_ARCH_ARM) || defined(__TARGET_ARCH_THUMB) || defined(_ARM) || defined(_M_ARM) || defined(_M_ARMT) || defined(__arm) || defined(_M_ARM)defined(__ARM_ARCH_2__) || defined(__ARM_ARCH_3__) || defined(__ARM_ARCH_3M__) || defined(__ARM_ARCH_4T__) || defined(__TARGET_ARM_4T) || defined(__ARM_ARCH_5__) || defined(__ARM_ARCH_5E__) || defined(__ARM_ARCH_5T__) || defined(__ARM_ARCH_5TE__) || defined(__ARM_ARCH_5TEJ__) || defined(__ARM_ARCH_6__) || defined(__ARM_ARCH_6J__) || defined(__ARM_ARCH_6K__) || defined(__ARM_ARCH_6Z__) || defined(__ARM_ARCH_6ZK__) || defined(__ARM_ARCH_6T2__) || defined(__ARM_ARCH_7__) || defined(__ARM_ARCH_7A__) || defined(__ARM_ARCH_7R__) || defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7S__) */
-#elif defined(__mips__) || defined(mips) || defined(_R3000) || defined(_R4000) || defined(_R5900) || defined(__mips) || defined(__mips) || defined(__MIPS__) || defined(_MIPS_ISA)defined(__mips)defined(_MIPS_ISA_MIPS1) || defined(_MIPS_ISA_MIPS1) || defined(_R3000) || defined(_MIPS_ISA_MIPS2) || defined(__MIPS_ISA2__) || defined(_R4000) || defined(_MIPS_ISA_MIPS3) || defined(__MIPS_ISA3__) || defined(_MIPS_ISA_MIPS4) || defined(__MIPS_ISA4__) || defined(_MIPS_ISA_MIPS4) || defined(__MIPS_ISA4__)
+#elif defined(__mips__) || defined(mips) || defined(_R3000) || defined(_R4000) || defined(_R5900) || defined(__mips) || defined(__mips) || defined(__MIPS__) || defined(_MIPS_ISA)||defined(__mips)||defined(_MIPS_ISA_MIPS1) || defined(_MIPS_ISA_MIPS1) || defined(_R3000) || defined(_MIPS_ISA_MIPS2) || defined(__MIPS_ISA2__) || defined(_R4000) || defined(_MIPS_ISA_MIPS3) || defined(__MIPS_ISA3__) || defined(_MIPS_ISA_MIPS4) || defined(__MIPS_ISA4__) || defined(_MIPS_ISA_MIPS4) || defined(__MIPS_ISA4__)
 #define C_ARCHITECTURE_MIPS 1
 #define C_ARCHITECTURE "MIPS"
 /* #endif //defined(__mips__) || defined(mips) || defined(_R3000) || defined(_R4000) || defined(_R5900) || defined(__mips) || defined(__mips) || defined(__MIPS__) || defined(_MIPS_ISA)defined(__mips)defined(_MIPS_ISA_MIPS1) || defined(_MIPS_ISA_MIPS1) || defined(_R3000) || defined(_MIPS_ISA_MIPS2) || defined(__MIPS_ISA2__) || defined(_R4000) || defined(_MIPS_ISA_MIPS3) || defined(__MIPS_ISA3__) || defined(_MIPS_ISA_MIPS4) || defined(__MIPS_ISA4__) || defined(_MIPS_ISA_MIPS4) || defined(__MIPS_ISA4__) */
-#elif defined(__powerpc) || defined(__powerpc__) || defined(__powerpc64__) || defined(__POWERPC__) || defined(__ppc__) || defined(__ppc64__) || defined(__PPC__) || defined(__PPC64__) || defined(_ARCH_PPC) || defined(_ARCH_PPC64) || defined(_M_PPC) || defined(_M_PPC) || defined(_ARCH_PPC) || defined(_ARCH_PPC64) || defined(__PPCGECKO__) || defined(__PPCBROADWAY__) || defined(_XENON) || defined(__ppc) || defined(_M_PPC)defined(_ARCH_440) || defined(_ARCH_450) || defined(__ppc601__) || defined(_ARCH_601) || defined(__ppc603__) || defined(_ARCH_603) || defined(__ppc604__) || defined(_ARCH_604)
+#elif defined(__powerpc) || defined(__powerpc__) || defined(__powerpc64__) || defined(__POWERPC__) || defined(__ppc__) || defined(__ppc64__) || defined(__PPC__) || defined(__PPC64__) || defined(_ARCH_PPC) || defined(_ARCH_PPC64) || defined(_M_PPC) || defined(_M_PPC) || defined(_ARCH_PPC) || defined(_ARCH_PPC64) || defined(__PPCGECKO__) || defined(__PPCBROADWAY__) || defined(_XENON) || defined(__ppc) || defined(_M_PPC)||defined(_ARCH_440) || defined(_ARCH_450) || defined(__ppc601__) || defined(_ARCH_601) || defined(__ppc603__) || defined(_ARCH_603) || defined(__ppc604__) || defined(_ARCH_604)
 #define C_ARCHITECTURE_POWERPC 1
 #define C_ARCHITECTURE "PowerPC"
 /* #endif //defined(__powerpc) || defined(__powerpc__) || defined(__powerpc64__) || defined(__POWERPC__) || defined(__ppc__) || defined(__ppc64__) || defined(__PPC__) || defined(__PPC64__) || defined(_ARCH_PPC) || defined(_ARCH_PPC64) || defined(_M_PPC) || defined(_M_PPC) || defined(_ARCH_PPC) || defined(_ARCH_PPC64) || defined(__PPCGECKO__) || defined(__PPCBROADWAY__) || defined(_XENON) || defined(__ppc) || defined(_M_PPC)defined(_ARCH_440) || defined(_ARCH_450) || defined(__ppc601__) || defined(_ARCH_601) || defined(__ppc603__) || defined(_ARCH_603) || defined(__ppc604__) || defined(_ARCH_604) */
@@ -690,6 +690,14 @@ extern "C"{
 #if __STDC_VERSION__ >= 201112L
 #define C_STANDARD_C11 1
 #endif /* __STDC_VERSION__ == 201112L */
+/* C17/C18 标准 */
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201710L
+#define C_STANDARD_C17 1
+#endif /* __STDC_VERSION__ >= 201710L (C17/C18) */
+/* C23 标准（草案或正式版） */
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#define C_STANDARD_C23 1
+#endif /* __STDC_VERSION__ >= 202311L (C23) */
 #if __STDC_HOSTED__
 #define C_STANDARD_HOSTED 1
 #endif /* __STDC_HOSTED__ */
@@ -702,6 +710,15 @@ extern "C"{
 #if __cplusplus >= 201402L
 #define C_STANDARD_CPP14 1
 #endif /* __cplusplus == 201402L */
+#if __cplusplus >= 201703L
+#define C_STANDARD_CPP17 1
+#endif /* __cplusplus >= 201703L (C++17) */
+#if __cplusplus >= 202002L
+#define C_STANDARD_CPP20 1
+#endif /* __cplusplus >= 202002L (C++20) */
+#if __cplusplus >= 202302L
+#define C_STANDARD_CPP23 1
+#endif /* __cplusplus >= 202302L (C++23) */
 #if __cplusplus_cli >= 200406L
 #define C_STANDARD_CLI 1
 #endif /* __cplusplus_cli == 200406L */
@@ -806,18 +823,18 @@ extern "C"{
 /*#if __OPTIMIZE__
 #define __OPTIMIZE__ 1
 #endif /* __OPTIMIZE__ */
-#if __OPTIMIZE_SIZE__
-#define __OPTIMIZE_SIZE__ 1
-#endif /* __OPTIMIZE_SIZE__ */
-#if __NO_INLINE__
-#define __NO_INLINE__ 1
-#endif /* __NO_INLINE__ */
+//#if __OPTIMIZE_SIZE__
+//#define __OPTIMIZE_SIZE__ 1
+//#endif /* __OPTIMIZE_SIZE__ */
+//#if __NO_INLINE__
+//#define __NO_INLINE__ 1
+//#endif /* __NO_INLINE__ */
 /*#if __REGISTER_PREFIX__
 #define __REGISTER_PREFIX__ 1
 #endif /* __REGISTER_PREFIX__ */
-#if __USER_LABEL_PREFIX__
-#define __USER_LABEL_PREFIX__ 1
-#endif /* __USER_LABEL_PREFIX__ */
+//#if __USER_LABEL_PREFIX__
+//#define __USER_LABEL_PREFIX__ 1
+//#endif /* __USER_LABEL_PREFIX__ */
 /*#if __BYTE_ORDER__
 #define __BYTE_ORDER__ 1
 #endif /* __BYTE_ORDER__ */

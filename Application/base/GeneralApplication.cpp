@@ -267,7 +267,7 @@ namespace general
         char sz_time[64] = {0};
         strftime(sz_time, sizeof(sz_time), "%Y%m%d%H%M%S", &tm1);
         char sz_file_name[256] = {0};
-        snprintf(sz_file_name, sizeof(sz_file_name), "%s_%s%ld_%ld_%lld_%s_%ld.dump", 
+        snprintf(sz_file_name, sizeof(sz_file_name), "%s_%s%ld_%d_%ld_%s_%d.dump", 
 			GetAppLicationName().c_str(),sz_time, ts.tv_nsec, spdlog::details::os::pid(), spdlog::details::os::thread_id(), it->second.c_str(),sig_num);
         boost::stacktrace::safe_dump_to(sz_file_name); // windows上无效 // This code causing deadlocks on some platforms. Disabled
       #endif

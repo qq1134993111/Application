@@ -1,7 +1,9 @@
 #pragma once
 #include <functional>
 #include <unordered_map>
+#if defined(_WIN32)
 #define SPDLOG_WCHAR_TO_UTF8_SUPPORT
+#endif
 #include <spdlog/spdlog.h>
 #include "Property.h"
 
@@ -331,9 +333,11 @@ constexpr std::string_view ExtractFileName(std::string_view path, std::string_vi
 #else
 
 #ifdef _WIN32
-   #define __FILENAME__ (strrchr(__FILE__, '\\') ? (strrchr(__FILE__, '\\') + 1) : __FILE__)
+   //#define __FILENAME__ (strrchr(__FILE__, '\\') ? (strrchr(__FILE__, '\\') + 1) : __FILE__)
+   #define __FILENAME__ __FILE__ 
 #else
-   #define __FILENAME__ (strrchr(__FILE__, '/') ? (strrchr(__FILE__, '/') + 1) : __FILE__)
+   //#define __FILENAME__ (strrchr(__FILE__, '/') ? (strrchr(__FILE__, '/') + 1) : __FILE__)
+   #define __FILENAME__ __FILE__ 
 #endif
 
 #endif
