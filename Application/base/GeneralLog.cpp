@@ -158,8 +158,9 @@ namespace general
 			s_logger = std::make_shared<spdlog::async_logger>(logger_name, std::begin(v_sink), std::end(v_sink), spdlog::thread_pool(), 
 				spdlog::async_overflow_policy::block);
             
-			spdlog::flush_every(std::chrono::microseconds(prop.GetValue(log_config_key::kAsyncFlushEveryMicrosecondInterval,
-				log_config_key::default_value::kAsyncFlushEveryMicrosecondIntervalValue)));
+			auto micro_seconds=std::chrono::microseconds(prop.GetValue(log_config_key::kAsyncFlushEveryMicrosecondInterval,
+				log_config_key::default_value::kAsyncFlushEveryMicrosecondIntervalValue));
+			spdlog::flush_every(std::chrono::duration_cast<std::chrono::seconds>(micro_seconds));
 		}
 		else
 		{

@@ -267,6 +267,24 @@ namespace general
 }
 
 
+// GCC 4.8.x特化std::hash
+#if defined(__GNUC__) && (__GNUC__ == 4 && __GNUC_MINOR__ <= 8)
+namespace std {
+	template<>
+	struct hash<general::log_config_key::LoggerThreadMode> {
+		size_t operator()(general::log_config_key::LoggerThreadMode mode) const {
+			return static_cast<size_t>(static_cast<uint8_t>(mode));
+		}
+	};
+
+	template<>
+	struct hash<general::log_config_key::LoggerType> {
+		size_t operator()(general::log_config_key::LoggerType type) const {
+			return static_cast<size_t>(static_cast<uint8_t>(type));
+		}
+	};
+}
+#endif
 
 #define LOG_INIT(prop)           general::GeneralLog::Init(prop)
 #define LOG_SET_LEVEL(l)         general::GeneralLog::SetLevel(l)
