@@ -88,6 +88,11 @@ namespace general
         template <typename ArgumentType>
         using OptionCallback = std::function<int32_t(const std::string &option_name, const ArgumentType &value)>;
 
+		void AddPositionalOption(const char* option_name,int32_t max_count=1)
+		{
+			pos_desc_.add(option_name, max_count);
+		}
+
 		int32_t AddOption(const char* option_name, const char* option_desc)
 		{
 			int32_t ec;
@@ -220,6 +225,11 @@ namespace general
 			}
 		}
 
+		void DisableShortOptionStyle()
+		{
+			options_style_ = options_style_& ~(boost::program_options::command_line_style::allow_short
+				| boost::program_options::command_line_style::allow_dash_for_short);
+		}
 	private:
         std::map<int32_t, std::string> sig_name_map_;
 #if defined(C_SYSTEM_GNU_LINUX) 
@@ -252,6 +262,8 @@ namespace general
 		std::set<std::string> option_name_set_;
 		std::map<std::string, std::function<int32_t()>> option_callback_map_;
 		boost::program_options::options_description options_desc_;
+		boost::program_options::positional_options_description pos_desc_;
+		int options_style_= boost::program_options::command_line_style::default_style;
 		boost::program_options::variables_map options_vm_;
 
 		std::unique_ptr<SingletonProcess> singleton_process_;

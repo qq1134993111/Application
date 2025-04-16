@@ -258,7 +258,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 endif()
 
 
-set(Application_INCLUDE ${PROJECT_SOURCE_DIR}/Application)
+set(Application_INCLUDE ${PROJECT_SOURCE_DIR}/src)
 
 
 add_executable(${PROJECT_NAME} ${SOURCES})
