@@ -690,11 +690,11 @@ extern "C"{
 #if __STDC_VERSION__ >= 201112L
 #define C_STANDARD_C11 1
 #endif /* __STDC_VERSION__ == 201112L */
-/* C17/C18 标准 */
+/* C17/C18 鏍囧噯 */
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201710L
 #define C_STANDARD_C17 1
 #endif /* __STDC_VERSION__ >= 201710L (C17/C18) */
-/* C23 标准（草案或正式版） */
+/* C23 鏍囧噯锛堣崏妗堟垨姝ｅ紡鐗堬級 */
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
 #define C_STANDARD_C23 1
 #endif /* __STDC_VERSION__ >= 202311L (C23) */

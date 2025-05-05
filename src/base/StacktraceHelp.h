@@ -5,7 +5,7 @@
 //#include <boost/assert.hpp>
 
 
-// ±àÒëÆÚÅĞ¶Ï Boost °æ±¾
+// ç¼–è¯‘æœŸåˆ¤æ–­ Boost ç‰ˆæœ¬
 #if BOOST_VERSION >= 106500
 
 #define BOOST_ENABLE_ASSERT_DEBUG_HANDLER
@@ -32,9 +32,9 @@ inline void assertion_failed(char const *expr, char const *function, char const 
 } // namespace boost
 
 /*
-ÎÒÃÇÒÑ¾­ÎªÕû¸öÏîÄ¿¶¨ÒåÁËBOOST_ENABLE_ASSERT_DEBUG_HANDLERºê¡£
-ÏÖÔÚËùÓĞµÄBOOST_ASSERTºÍBOOST_ASSERT_MSGÔÚÊ§°ÜµÄÇé¿öÏÂ¶¼½«µ÷ÓÃÎÒÃÇµÄº¯Êıassertion_failedºÍassertion_failed_msg¡£
-ÔÚassertion_failed_msgÖĞ£¬ÎÒÃÇÊä³öÁËÓÉ¶ÏÑÔºêºÍboost::stacktrace::stacktraceÌá¹©µÄĞÅÏ¢¡£
+æˆ‘ä»¬å·²ç»ä¸ºæ•´ä¸ªé¡¹ç›®å®šä¹‰äº†BOOST_ENABLE_ASSERT_DEBUG_HANDLERå®ã€‚
+ç°åœ¨æ‰€æœ‰çš„BOOST_ASSERTå’ŒBOOST_ASSERT_MSGåœ¨å¤±è´¥çš„æƒ…å†µä¸‹éƒ½å°†è°ƒç”¨æˆ‘ä»¬çš„å‡½æ•°assertion_failedå’Œassertion_failed_msgã€‚
+åœ¨assertion_failed_msgä¸­ï¼Œæˆ‘ä»¬è¾“å‡ºäº†ç”±æ–­è¨€å®å’Œboost::stacktrace::stacktraceæä¾›çš„ä¿¡æ¯ã€‚
 */
 
 
@@ -42,21 +42,21 @@ inline void assertion_failed(char const *expr, char const *function, char const 
 //Exceptions with stacktrace
 #include <boost/stacktrace.hpp>
 #include <boost/exception/all.hpp>
-// ÉùÃ÷Ò»¸ö boost::error_info  typedef£¬ÓÃÓÚ±£´æ¶ÑÕ»¸ú×ÙĞÅÏ¢¡£
+// å£°æ˜ä¸€ä¸ª boost::error_info  typedefï¼Œç”¨äºä¿å­˜å †æ ˆè·Ÿè¸ªä¿¡æ¯ã€‚
 typedef boost::error_info<struct tag_stacktrace, boost::stacktrace::stacktrace> traced;
-// ±àĞ´Ò»¸ö°ïÖúÀà£¬ÓÃÓÚÅ×³ö´øÓĞ¶ÑÕ»¸ú×ÙµÄÈÎºÎÒì³£¡£
+// ç¼–å†™ä¸€ä¸ªå¸®åŠ©ç±»ï¼Œç”¨äºæŠ›å‡ºå¸¦æœ‰å †æ ˆè·Ÿè¸ªçš„ä»»ä½•å¼‚å¸¸ã€‚
 template <class E> void throw_with_trace(const E &e)
 {
     throw boost::enable_error_info(e) << traced(boost::stacktrace::stacktrace());
 }
-// ÇëÊ¹ÓÃthrow_with_trace(E);¶ø²»ÊÇÖ»Ê¹ÓÃthrow E"
+// è¯·ä½¿ç”¨throw_with_trace(E);è€Œä¸æ˜¯åªä½¿ç”¨throw E"
 /*
   if (i >= 4)
     throw_with_trace(std::out_of_range("'i' must be less than 4 in oops()"));
   if (i <= 0)
     throw_with_trace(std::logic_error("'i' must not be greater than zero in oops()"));
 */
-// ´¦ÀíÒì³££º
+// å¤„ç†å¼‚å¸¸ï¼š
 /*
 try {
     foo(5); // testing assert handler

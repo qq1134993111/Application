@@ -16,7 +16,7 @@ inline int is_leap_year(int y)
 
 
 
-inline void nolocks_localtime(struct tm *tmp, time_t t, time_t tz = 0 /*区时*/, int dst=0 /*是否开启夏令时*/)
+inline void nolocks_localtime(struct tm *tmp, time_t t, time_t tz = 0 /*鍖烘椂*/, int dst=0 /*鏄惁寮�鍚浠ゆ椂*/)
 {
     const time_t secs_min = 60;
     const time_t secs_hour = 3600;

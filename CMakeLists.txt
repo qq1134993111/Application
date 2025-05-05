@@ -263,6 +263,8 @@ set(Application_INCLUDE ${PROJECT_SOURCE_DIR}/src)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+
 # 针对特定文件覆盖设置（确保在 add_executable 之后）
 set_source_files_properties(
     ${THIRD_PARTY_LIBRARY_DIR}/whereami/whereami.c

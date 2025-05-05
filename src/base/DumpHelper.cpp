@@ -71,7 +71,7 @@ bool DumpHelper::EnableDump(std::string directory, std::string file_name)
 
 LONG WINAPI ExceptionFilter(LPEXCEPTION_POINTERS lpExceptionInfo)
 {
-    // ÕâÀï×öÒ»Ğ©Òì³£µÄ¹ıÂË»òÌáÊ¾
+    // è¿™é‡Œåšä¸€äº›å¼‚å¸¸çš„è¿‡æ»¤æˆ–æç¤º
     if (IsDebuggerPresent())
     {
         return EXCEPTION_CONTINUE_SEARCH;
@@ -118,11 +118,11 @@ LONG WINAPI ExceptionFilter(LPEXCEPTION_POINTERS lpExceptionInfo)
         }
     });
 
-    // ¶¨Òåº¯ÊıÖ¸Õë
+    // å®šä¹‰å‡½æ•°æŒ‡é’ˆ
     typedef BOOL(WINAPI * MiniDumpWriteDumpT)(HANDLE, DWORD, HANDLE, MINIDUMP_TYPE, PMINIDUMP_EXCEPTION_INFORMATION,
                                               PMINIDUMP_USER_STREAM_INFORMATION, PMINIDUMP_CALLBACK_INFORMATION);
 
-    // ´Ó "DbgHelp.dll" ¿âÖĞ»ñÈ¡ "MiniDumpWriteDump" º¯Êı
+    // ä» "DbgHelp.dll" åº“ä¸­è·å– "MiniDumpWriteDump" å‡½æ•°
     MiniDumpWriteDumpT pfnMiniDumpWriteDump = NULL;
     HMODULE hDbgHelp = LoadLibraryW(L"DbgHelp.dll");
     if (NULL == hDbgHelp)
@@ -151,7 +151,7 @@ LONG WINAPI ExceptionFilter(LPEXCEPTION_POINTERS lpExceptionInfo)
         return EXCEPTION_CONTINUE_EXECUTION;
     }
 
-    // Ğ´Èë dmp ÎÄ¼ş
+    // å†™å…¥ dmp æ–‡ä»¶
     MINIDUMP_EXCEPTION_INFORMATION expParam;
     expParam.ThreadId = GetCurrentThreadId();
     expParam.ExceptionPointers = lpExceptionInfo;

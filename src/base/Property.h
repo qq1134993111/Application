@@ -2,12 +2,12 @@
 #ifndef _GENERAL_PROPERTY_
 #define _GENERAL_PROPERTY_
 
-#include<unordered_map>
-#include<string>
-#include<stdint.h>
+#include <unordered_map>
+#include <string>
+#include <stdint.h>
 
-#include<boost/any.hpp>
-#include<boost/optional.hpp>
+#include <boost/any.hpp>
+#include <boost/optional.hpp>
 #include <unordered_set>
 
 namespace general
