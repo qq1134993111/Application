@@ -19,7 +19,7 @@ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define C_PREDEFINED_H
 
 #if defined(__cplusplus)
-extern "C"{
+extern "C" {
 #endif /* defined(__cplusplus) */
 
 /* Architecture */
@@ -77,7 +77,7 @@ extern "C"{
 #define C_ARCHITECTURE_IA64 1
 #define C_ARCHITECTURE "IA64"
 #endif /* defined(__ia64__) || defined(_IA64) || defined(__IA64__) || defined(__ia64) || defined(_M_IA64) || defined(_M_IA64) || defined(_M_IA64) || defined(__itanium__) || defined(_M_IA64) */
-#if defined(__m68k__) ||  || defined(M68000) || defined(__MC68K__) || defined(__mc68000__) || defined(__MC68000__) || defined(__mc68010__) || defined(__mc68020__) || defined(__MC68020__) || defined(__mc68030__) || defined(__MC68030__) || defined(__mc68040__) || defined(__mc68060__) 
+#if defined(__m68k__) ||  || defined(M68000) || defined(__MC68K__) || defined(__mc68000__) || defined(__MC68000__) || defined(__mc68010__) || defined(__mc68020__) || defined(__MC68020__) || defined(__mc68030__) || defined(__MC68030__) || defined(__mc68040__) || defined(__mc68060__)
 #define C_ARCHITECTURE_M68K 1
 #define C_ARCHITECTURE "M68K"
 #endif /* defined(__m68k__) ||  || defined(M68000) || defined(__MC68K__) || defined(__mc68000__) || defined(__MC68000__) || defined(__mc68010__) || defined(__mc68020__) || defined(__MC68020__) || defined(__mc68030__) || defined(__MC68030__) || defined(__mc68040__) || defined(__mc68060__)  */
@@ -337,7 +337,7 @@ extern "C"{
 #define C_COMPILER_PACIFIC 1
 #define C_COMPILER "Pacific"
 #endif /* defined(__PACIFIC__) || defined(_PACC_VER) */
-#if defined(__POCC__) 
+#if defined(__POCC__)
 #define C_COMPILER_PALM 1
 #define C_COMPILER "Palm C"
 #endif /* defined(__POCC__)  */
@@ -390,7 +390,7 @@ extern "C"{
 #define C_COMPILER_ULTIMATE 1
 #define C_COMPILER "Ultimate C/C++"
 #endif /* defined(_UCC) || defined(_MAJOR_REV) || defined(_MINOR_REV) */
-#if defined(__USLC__) || defined(__SCO_VERSION__) 
+#if defined(__USLC__) || defined(__SCO_VERSION__)
 #define C_COMPILER_USL 1
 #define C_COMPILER "USL C"
 #endif /* defined(__USLC__) || defined(__SCO_VERSION__)  */

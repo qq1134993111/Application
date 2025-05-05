@@ -51,6 +51,7 @@ struct PluginInfo
     std::string path;
     int32_t version;
 };
+
 // REFLECTION(PluginInfo, name, path, version);
 REFLECTION_ALIAS(PluginInfo, "PluginInfo", FLDALIAS(&PluginInfo::name, "plugin_name"),
                  FLDALIAS(&PluginInfo::path, "plugin_path"), FLDALIAS(&PluginInfo::version, "version"));
@@ -59,6 +60,7 @@ struct PluginInfos
 {
     std::vector<iguana::xml_attr_t<PluginInfo>> plugins;
 };
+
 REFLECTION_ALIAS(PluginInfos, "PluginInfos", FLDALIAS(&PluginInfos::plugins, "row"));
 
 struct ConfigData
@@ -67,6 +69,7 @@ struct ConfigData
     std::string app_name;
     PluginInfos plugins;
 };
+
 // REFLECTION(ConfigData, id, app_name, plugins);
 REFLECTION_ALIAS(ConfigData, "root", FLDALIAS(&ConfigData::id, "id"), FLDALIAS(&ConfigData::app_name, "name"),
                  FLDALIAS(&ConfigData::plugins, "plugins"));

@@ -22,7 +22,7 @@ bool DumpHelper::EnableDump(std::string directory, std::string file_name)
     if (directory.empty() || file_name.empty())
     {
         wchar_t szMbsFile[MAX_PATH] = {0};
-        ::GetModuleFileNameW(NULL, szMbsFile, MAX_PATH);
+        GetModuleFileNameW(nullptr, szMbsFile, MAX_PATH);
         path = szMbsFile;
 
         if (directory.empty())
@@ -39,18 +39,18 @@ bool DumpHelper::EnableDump(std::string directory, std::string file_name)
     path = directory;
     if (path.is_relative())
     {
-#if BOOST_VERSION >= 106200 
+#if BOOST_VERSION >= 106200
         path = boost::filesystem::absolute(path, ec);
 #else
 		path = boost::filesystem::absolute(path);
 #endif
     }
 
-#if BOOST_VERSION >= 106200 
-	path = boost::filesystem::weakly_canonical(path, ec);
+#if BOOST_VERSION >= 106200
+    path = boost::filesystem::weakly_canonical(path, ec);
 #endif
 
-    if (boost::filesystem::exists(path,ec))
+    if (boost::filesystem::exists(path, ec))
     {
         if (!boost::filesystem::is_directory(path, ec))
         {
@@ -101,7 +101,7 @@ LONG WINAPI ExceptionFilter(LPEXCEPTION_POINTERS lpExceptionInfo)
     write_path /= sz_file_name;
 
     HANDLE hDumpFile = CreateFileW(write_path.wstring().c_str(), GENERIC_READ | GENERIC_WRITE,
-                                   FILE_SHARE_WRITE | FILE_SHARE_READ, 0, CREATE_ALWAYS, 0, 0);
+                                   FILE_SHARE_WRITE | FILE_SHARE_READ, nullptr, CREATE_ALWAYS, 0, nullptr);
 
     if (INVALID_HANDLE_VALUE == hDumpFile)
     {
@@ -111,7 +111,8 @@ LONG WINAPI ExceptionFilter(LPEXCEPTION_POINTERS lpExceptionInfo)
 
         return EXCEPTION_CONTINUE_EXECUTION;
     }
-    std::unique_ptr<HANDLE, void (*)(HANDLE *)> ptr_file_handle(&hDumpFile, [](HANDLE *p_h) {
+    std::unique_ptr<HANDLE, void (*)(HANDLE*)> ptr_file_handle(&hDumpFile, [](HANDLE* p_h)
+    {
         if (*p_h != INVALID_HANDLE_VALUE)
         {
             CloseHandle(*p_h);
@@ -119,13 +120,13 @@ LONG WINAPI ExceptionFilter(LPEXCEPTION_POINTERS lpExceptionInfo)
     });
 
     // 定义函数指针
-    typedef BOOL(WINAPI * MiniDumpWriteDumpT)(HANDLE, DWORD, HANDLE, MINIDUMP_TYPE, PMINIDUMP_EXCEPTION_INFORMATION,
+    using MiniDumpWriteDumpT = BOOL(WINAPI *)(HANDLE, DWORD, HANDLE, MINIDUMP_TYPE, PMINIDUMP_EXCEPTION_INFORMATION,
                                               PMINIDUMP_USER_STREAM_INFORMATION, PMINIDUMP_CALLBACK_INFORMATION);
 
     // 从 "DbgHelp.dll" 库中获取 "MiniDumpWriteDump" 函数
-    MiniDumpWriteDumpT pfnMiniDumpWriteDump = NULL;
+    MiniDumpWriteDumpT pfnMiniDumpWriteDump = nullptr;
     HMODULE hDbgHelp = LoadLibraryW(L"DbgHelp.dll");
-    if (NULL == hDbgHelp)
+    if (nullptr == hDbgHelp)
     {
         int error = GetLastError();
         std::string error_message = std::system_category().message(error);
@@ -133,8 +134,9 @@ LONG WINAPI ExceptionFilter(LPEXCEPTION_POINTERS lpExceptionInfo)
 
         return EXCEPTION_CONTINUE_EXECUTION;
     }
-    std::unique_ptr<HMODULE, void (*)(HMODULE *)> ptr_lib_module(&hDbgHelp, [](HMODULE *p_module) {
-        if (*p_module != NULL)
+    std::unique_ptr<HMODULE, void (*)(HMODULE*)> ptr_lib_module(&hDbgHelp, [](HMODULE* p_module)
+    {
+        if (*p_module != nullptr)
         {
             FreeLibrary(*p_module);
         }
@@ -142,7 +144,7 @@ LONG WINAPI ExceptionFilter(LPEXCEPTION_POINTERS lpExceptionInfo)
 
     pfnMiniDumpWriteDump = (MiniDumpWriteDumpT)GetProcAddress(hDbgHelp, "MiniDumpWriteDump");
 
-    if (NULL == pfnMiniDumpWriteDump)
+    if (nullptr == pfnMiniDumpWriteDump)
     {
         int error = GetLastError();
         std::string error_message = std::system_category().message(error);
@@ -157,7 +159,7 @@ LONG WINAPI ExceptionFilter(LPEXCEPTION_POINTERS lpExceptionInfo)
     expParam.ExceptionPointers = lpExceptionInfo;
     expParam.ClientPointers = FALSE;
     bool success = pfnMiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hDumpFile, MiniDumpWithFullMemory,
-                                        (lpExceptionInfo ? &expParam : NULL), NULL, NULL);
+                                        (lpExceptionInfo ? &expParam : nullptr), nullptr, nullptr);
 
     if (!success)
     {

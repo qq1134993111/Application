@@ -16,19 +16,20 @@
 
 namespace boost
 {
-inline void assertion_failed_msg(char const *expr, char const *msg, char const *function, char const * /*file*/,
-                                 long /*line*/)
-{
-    std::cerr << "Expression '" << expr << "' is false in function '" << function << "': " << (msg ? msg : "<...>")
-              << ".\n"
-              << "Backtrace:\n"
-              << boost::stacktrace::stacktrace() << '\n';
-    std::abort();
-}
-inline void assertion_failed(char const *expr, char const *function, char const *file, long line)
-{
-    ::boost::assertion_failed_msg(expr, 0 /*nullptr*/, function, file, line);
-}
+    inline void assertion_failed_msg(const char* expr, const char* msg, const char* function, const char* /*file*/,
+                                     long /*line*/)
+    {
+        std::cerr << "Expression '" << expr << "' is false in function '" << function << "': " << (msg ? msg : "<...>")
+            << ".\n"
+            << "Backtrace:\n"
+            << stacktrace::stacktrace() << '\n';
+        std::abort();
+    }
+
+    inline void assertion_failed(const char* expr, const char* function, const char* file, long line)
+    {
+        assertion_failed_msg(expr, nullptr /*nullptr*/, function, file, line);
+    }
 } // namespace boost
 
 /*
@@ -38,17 +39,18 @@ inline void assertion_failed(char const *expr, char const *function, char const 
 */
 
 
-
 //Exceptions with stacktrace
 #include <boost/stacktrace.hpp>
 #include <boost/exception/all.hpp>
 // 声明一个 boost::error_info  typedef，用于保存堆栈跟踪信息。
-typedef boost::error_info<struct tag_stacktrace, boost::stacktrace::stacktrace> traced;
+using traced = boost::error_info<struct tag_stacktrace, boost::stacktrace::stacktrace>;
 // 编写一个帮助类，用于抛出带有堆栈跟踪的任何异常。
-template <class E> void throw_with_trace(const E &e)
+template <class E>
+void throw_with_trace(const E& e)
 {
     throw boost::enable_error_info(e) << traced(boost::stacktrace::stacktrace());
 }
+
 // 请使用throw_with_trace(E);而不是只使用throw E"
 /*
   if (i >= 4)
@@ -128,7 +130,7 @@ inline void my_terminate_handler()
     }
     std::abort();
 }
+
 //std::set_terminate(&my_terminate_handler);
 
 #endif
-

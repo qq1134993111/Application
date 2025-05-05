@@ -3,10 +3,10 @@
 
 #if defined(C_SYSTEM_WINDOWS)
 #include <string>
+
 class DumpHelper
 {
-  public:
+public:
     static bool EnableDump(std::string directory = "", std::string file_name = "");
 };
 #endif
-
