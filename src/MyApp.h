@@ -18,7 +18,7 @@ private:
 
     void OnIdle() override
     {
-    };
+    }
     //virtual void OnSignal(int sig_num, int value) {}
     void OnExit() override
     {

@@ -263,7 +263,10 @@ set(Application_INCLUDE ${PROJECT_SOURCE_DIR}/src)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:$<$<CXX_COMPILER_ID:MSVC>:/utf-8>>)
+if(MSVC)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE _CRT_SECURE_NO_WARNINGS)
+endif()
 
 # 针对特定文件覆盖设置（确保在 add_executable 之后）
 set_source_files_properties(
