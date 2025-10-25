@@ -57,6 +57,7 @@ template <class derived_t, class args_t> class TcpRecvOp
             derived.Listener().Notify(EventType::recv, data);
 
             derived.Buffer().consume(bytes_transferred);
+            derived.ShrinkBuffer();
 
             DoTcpAsyncRead(this_ptr);
             derived.DoExpiresRecvTimer(std::move(this_ptr));

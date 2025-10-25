@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "CloseCp.hpp"
 #include "ConnectCp.hpp"
 #include "ConnectTimeoutCp.hpp"
@@ -73,8 +73,9 @@ class ClientImpl : public Object_t<derived_t>,
           ConnectTimeoutCp<derived_t, args_t>(), ReconnectTimerCp<derived_t, args_t>(),
           HeartbeatTimerCp<derived_t, args_t>(), RecvTimerCp<derived_t, args_t>(), TcpRecvOp<derived_t, args_t>(),
           TcpSendOp<derived_t, args_t>(), ShutDownCp<derived_t, args_t>(), CloseCp<derived_t, args_t>(),
-          UserDataCp<derived_t, args_t>(), listener_(), buffer_()
+          UserDataCp<derived_t, args_t>(), listener_(), buffer_ptr_(std::make_unique<buffer_type>())
     {
+     
     }
 
     ~ClientImpl()
@@ -383,7 +384,26 @@ class ClientImpl : public Object_t<derived_t>,
   protected:
     buffer_type &Buffer()
     {
-        return buffer_;
+        return *buffer_ptr_;
+    }
+
+    //收到大消息后，可以缩减 buffer 大小
+    void ShrinkBuffer(std::size_t threshold_capacity = 1024 * 1024 * 10, std::size_t max_size = 0)
+    {
+        auto& buffer = this->Buffer();
+        if (buffer.capacity() > threshold_capacity && buffer.size() <= max_size)
+        {
+            // 创建一个新的 buffer
+            std::unique_ptr<buffer_type> new_buffer_ptr=std::make_unique<buffer_type>();
+            if (buffer.size() > 0)
+            {
+                // 直接把旧 buffer 的数据写入新 buffer
+                std::ostream os(new_buffer_ptr.get());
+                os.write(net::compat_buffer_cast<char>(buffer.data()), buffer.size());
+            }
+            // 替换
+            std::swap(buffer_ptr_, new_buffer_ptr);           
+        }
     }
 
     inline Listener_t &Listener() noexcept
@@ -395,7 +415,7 @@ class ClientImpl : public Object_t<derived_t>,
     /// listener
     Listener_t listener_;
 
-    buffer_type buffer_;
+    std::unique_ptr<buffer_type> buffer_ptr_;
 
     std::atomic<State_t> state_ = State_t::stopped;
     bool stopped_ = true;

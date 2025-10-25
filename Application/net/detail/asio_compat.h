@@ -131,4 +131,19 @@ namespace net {
 #endif
     }
 
+    template <typename PodType, typename ConstBufferSequence>
+    inline const PodType* compat_buffer_cast(const ConstBufferSequence& buffers)
+    {
+#if defined(ASIO_STANDALONE)
+        return reinterpret_cast<const PodType*>(&*asio::buffers_begin(buffers));
+#  else
+   #  if BOOST_VERSION < 106600
+        return boost::asio::buffer_cast<const PodType*>(*buffers.begin());
+   #  else
+        return reinterpret_cast<const PodType*>(&*boost::asio::buffers_begin(buffers));
+   #  endif
+
+#endif
+    }
+
 } // namespace net
