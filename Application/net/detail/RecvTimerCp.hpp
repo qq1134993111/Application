@@ -25,32 +25,29 @@ template <class derived_t, class args_t> class RecvTimerCp
   protected:
     void DoExpiresRecvTimer(std::shared_ptr<derived_t> this_ptr)
     {
-        recv_timer_finished_ = false;
-        if (recv_timer_canceled_ptr_ != nullptr)
-        {
-            *recv_timer_canceled_ptr_ = true;
-        }
-        recv_timer_canceled_ptr_ = std::make_shared<bool>(false);
+     
+        recv_timer_finished_.store(false, std::memory_order_relaxed);
+        recv_timer_was_canceled_.store(false, std::memory_order_relaxed);
+
+
+        uint8_t current_generation = ++recv_timer_generation_;
 
         if (recv_timeout_seconds_ == 0)
             return;
 
-        // printf("FILE:%s,FUNCTION:%s,LINE:%d,connect_timeout_seconds_:%d\n", __FILE__, __FUNCTION__, __LINE__,
-        //        connect_timeout_seconds_.load());
-
         if (check_recv_timeout_timer_ == nullptr)
         {
-            auto &derived = static_cast<derived_t &>(*this);
-            check_recv_timeout_timer_ = std::make_shared<net::steady_timer>(derived.GetIoService());
+            auto& derived = static_cast<derived_t&>(*this);
+            check_recv_timeout_timer_ = std::make_shared<boost::asio::steady_timer>(derived.GetIoService());
         }
 
         set_timer_expires_from_now(*check_recv_timeout_timer_, std::chrono::seconds(recv_timeout_seconds_));
+
         check_recv_timeout_timer_->async_wait(
-            [this, this_ptr = std::move(this_ptr),
-             this_canceld = recv_timer_canceled_ptr_](net::error_code const &ec) {
-                if (*this_canceld)
+            [this, this_ptr = std::move(this_ptr),current_generation](boost::system::error_code const& ec) { 
+                if (current_generation != recv_timer_generation_.load(std::memory_order_relaxed))
                 {
-                    return;
+                    return; // 已失效
                 }
                 HandleRecvTimerTimeout(ec);
             });
@@ -59,10 +56,8 @@ template <class derived_t, class args_t> class RecvTimerCp
     size_t DoCancelRecvTimer()
     {
 
-        if (recv_timer_canceled_ptr_!=nullptr)
-        {
-            *recv_timer_canceled_ptr_ = true;
-        }
+        recv_timer_was_canceled_.store(true, std::memory_order_relaxed);
+        ++recv_timer_generation_;
 
         size_t size = 0;
 
@@ -92,7 +87,7 @@ template <class derived_t, class args_t> class RecvTimerCp
 
         if (!ec) // 0 操作成功
         {
-            recv_timer_finished_ = true;
+            recv_timer_finished_.store(true, std::memory_order_relaxed);
             auto &derived = static_cast<derived_t &>(*this);
             derived._DoneRecvTimerTimeout();
         }
@@ -104,21 +99,18 @@ template <class derived_t, class args_t> class RecvTimerCp
 
     bool IsRecvTimerFinished()
     {
-        return recv_timer_finished_;
+        return recv_timer_finished_.load(std::memory_order_relaxed);
     }
     bool IsRecvTimerCanceled()
     {
-        if (recv_timer_canceled_ptr_ != nullptr)
-        {
-            return *recv_timer_canceled_ptr_;
-        }
-        return false;
+        return recv_timer_was_canceled_.load(std::memory_order_relaxed);
     }
 
-    std::atomic<uint32_t> recv_timeout_seconds_{0};
     std::shared_ptr<net::steady_timer> check_recv_timeout_timer_;
-    bool recv_timer_finished_;
-    std::shared_ptr<bool> recv_timer_canceled_ptr_;
+    std::atomic<uint32_t> recv_timeout_seconds_{ 0 };
+    std::atomic<bool> recv_timer_finished_{ false };
+    std::atomic<bool> recv_timer_was_canceled_{ false };
+    std::atomic<uint8_t> recv_timer_generation_{ 0 };   
 };
 
 } // namespace net::detail

@@ -33,13 +33,11 @@ template <class derived_t, class args_t> class HeartbeatTimerCp
     }
     void DoExpiresHeartbeatTimer(std::shared_ptr<derived_t> this_ptr)
     {
-        heartbeat_timer_finished_ = false;
-        if (heartbeat_timer_canceled_ptr_ != nullptr)
-        {
-            *heartbeat_timer_canceled_ptr_ = true;
-        }
+        heartbeat_timer_finished_.store(false, std::memory_order_relaxed);
+        heartbeat_timer_was_canceled_.store(false, std::memory_order_relaxed);
 
-        heartbeat_timer_canceled_ptr_ = std::make_shared<bool>(false);
+
+        uint8_t current_generation = ++heartbeat_timer_generation_;
 
         if (heartbeat_seconds_ == 0)
             return;
@@ -56,11 +54,10 @@ template <class derived_t, class args_t> class HeartbeatTimerCp
         set_timer_expires_from_now(*check_heartbeat_timer_, std::chrono::seconds(heartbeat_seconds_));
 
         check_heartbeat_timer_->async_wait(
-            [this, this_ptr = std::move(this_ptr),
-             this_canceled = heartbeat_timer_canceled_ptr_](net::error_code const &ec) {
-                if (*this_canceled)
+            [this, this_ptr = std::move(this_ptr),current_generation](net::error_code const &ec) {
+                if (current_generation != heartbeat_timer_generation_.load(std::memory_order_relaxed))
                 {
-                    return;
+                    return; // 已失效
                 }
                 HandleHeartbeatTimerTimeout(ec);
             });
@@ -68,11 +65,8 @@ template <class derived_t, class args_t> class HeartbeatTimerCp
 
     size_t DoCancelHeartbeatTimer()
     {
-        if (heartbeat_timer_canceled_ptr_ != nullptr)
-        {
-            *heartbeat_timer_canceled_ptr_ = true;
-        }
-
+        heartbeat_timer_was_canceled_.store(true, std::memory_order_relaxed);
+        ++heartbeat_timer_generation_;
      
         size_t size = 0;
         if (check_heartbeat_timer_ != nullptr)
@@ -100,7 +94,7 @@ template <class derived_t, class args_t> class HeartbeatTimerCp
 
         if (!ec) // 0 操作成功
         {
-            heartbeat_timer_finished_ = true;
+            heartbeat_timer_finished_.store(true, std::memory_order_relaxed);
             auto &derived = static_cast<derived_t &>(*this);
             derived._DoneHeartbeatTimerTimeout();
         }
@@ -112,16 +106,11 @@ template <class derived_t, class args_t> class HeartbeatTimerCp
 
     bool IsHeartbeatTimerFinished()
     {
-        return heartbeat_timer_finished_;
+        return heartbeat_timer_finished_.load(std::memory_order_relaxed);
     }
     bool IsHeartbeatTimerCanceled()
     {
-        if (heartbeat_timer_canceled_ptr_ != nullptr)
-        {
-            return *heartbeat_timer_canceled_ptr_;
-        }
-
-        return false;
+        return heartbeat_timer_was_canceled_.load(std::memory_order_relaxed);
     }
 
     void _DoneHeartbeatTimerTimeout()
@@ -137,11 +126,12 @@ template <class derived_t, class args_t> class HeartbeatTimerCp
         this->DoExpiresHeartbeatTimer();
     }
 
-    std::atomic<uint32_t> heartbeat_seconds_{0};
     HeartbeartInfoFunc get_heartbeat_info_func_;
     std::shared_ptr<net::steady_timer> check_heartbeat_timer_;
-    bool heartbeat_timer_finished_;
-    std::shared_ptr<bool> heartbeat_timer_canceled_ptr_;
+    std::atomic<uint32_t> heartbeat_seconds_{ 0 };
+    std::atomic<bool> heartbeat_timer_finished_{false};
+    std::atomic<bool> heartbeat_timer_was_canceled_{ false };
+    std::atomic<uint8_t> heartbeat_timer_generation_{ 0 };
 };
 
 } // namespace net::detail
