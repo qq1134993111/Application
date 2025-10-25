@@ -1,8 +1,7 @@
 #pragma once
 #include <atomic>
 #include <memory>
-
-#include "boost/asio.hpp"
+#include "asio_compat.h"
 
 namespace net::detail
 {
@@ -41,12 +40,12 @@ template <class derived_t, class args_t> class ReconnectTimerCp
         if (check_reconnect_timer_ == nullptr)
         {
             auto &derived = static_cast<derived_t &>(*this);
-            check_reconnect_timer_ = std::make_shared<boost::asio::steady_timer>(derived.GetIoService());
+            check_reconnect_timer_ = std::make_shared<net::steady_timer>(derived.GetIoService());
         }
 
-        check_reconnect_timer_->expires_from_now(std::chrono::seconds(reconnect_seconds_));
+        set_timer_expires_from_now(*check_reconnect_timer_, std::chrono::seconds(reconnect_seconds_));
 
-        check_reconnect_timer_->async_wait([this, this_ptr = std::move(this_ptr)](boost::system::error_code const &ec) {
+        check_reconnect_timer_->async_wait([this, this_ptr = std::move(this_ptr)](net::error_code const &ec) {
             if (reconnect_timer_canceled_)
             {
                 return;
@@ -59,13 +58,17 @@ template <class derived_t, class args_t> class ReconnectTimerCp
     {
         reconnect_timer_canceled_ = true;
 
-        boost::system::error_code ignored_ec;
-
         size_t size = 0;
         if (check_reconnect_timer_!=nullptr)
         {
-            check_reconnect_timer_->cancel(ignored_ec);
+            try
+            {
+                size = check_reconnect_timer_->cancel();
+            }
+            catch (const boost::system::system_error& e)
+            {
 
+            }
             // printf("FILE:%s,FUNCTION:%s,LINE:%d, %d canceled,%d,%s\n", __FILE__, __FUNCTION__, __LINE__, size,
             //        ignored_ec.value(), boost::system::system_error(ignored_ec).what());
         }
@@ -73,7 +76,7 @@ template <class derived_t, class args_t> class ReconnectTimerCp
     }
 
   protected:
-    void HandleReconnectTimer(boost::system::error_code const &ec)
+    void HandleReconnectTimer(net::error_code const &ec)
     {
         // printf("FILE:%s,FUNCTION:%s,LINE:%d,%d,%s\n", __FILE__, __FUNCTION__, __LINE__, ec.value(),
         //        boost::system::system_error(ec).what());
@@ -86,7 +89,7 @@ template <class derived_t, class args_t> class ReconnectTimerCp
         }
         else
         {
-            BOOST_ASSERT(ec == boost::asio::error::connection_aborted);
+            BOOST_ASSERT(ec == net::error::connection_aborted);
         }
     }
 
@@ -102,7 +105,7 @@ template <class derived_t, class args_t> class ReconnectTimerCp
     std::atomic<uint32_t> reconnect_seconds_{0};
     std::atomic<int64_t> total_reconnect_times_{0};
 
-    std::shared_ptr<boost::asio::steady_timer> check_reconnect_timer_;
+    std::shared_ptr<net::steady_timer> check_reconnect_timer_;
     bool reconnect_timer_finished_;
     bool reconnect_timer_canceled_;
 };

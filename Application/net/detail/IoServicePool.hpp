@@ -5,9 +5,8 @@
 #include <list>
 #include <algorithm>
 #include "boost/noncopyable.hpp"
-#include "boost/asio.hpp"
 #include "boost/thread.hpp"
-#include "boost/system/error_code.hpp"
+#include "asio_compat.h"
 
 namespace net::detail
 {
@@ -15,11 +14,10 @@ namespace net::detail
 class IoServicePool : boost::noncopyable
 {
   public:
-    using ios_work_ptr = std::unique_ptr<boost::asio::io_service::work>;
     class IosWorker
     {
       public:
-        IosWorker() : ios_(), worker_(), work_(std::make_unique<boost::asio::io_service::work>(ios_))
+        IosWorker() : ios_(), worker_()
         {
         }
 
@@ -30,7 +28,6 @@ class IoServicePool : boost::noncopyable
 
         void Stop()
         {
-            work_.reset();
             //if (!ios_.stopped())
             //    ios_.stop();
         }
@@ -42,7 +39,7 @@ class IoServicePool : boost::noncopyable
                 worker_.join();
         }
 
-        boost::asio::io_service &GetIoService()
+        net::io_context &GetIoService()
         {
             return ios_;
         }
@@ -50,13 +47,13 @@ class IoServicePool : boost::noncopyable
       private:
         void Run()
         {
-            boost::system::error_code ec;
-            ios_.run(ec);
+            net::error_code ec;
+            auto guard = net::make_work_guard(ios_);
+            ios_.run();
         };
 
-        boost::asio::io_service ios_;
+        net::io_context ios_;
         boost::thread worker_;
-        ios_work_ptr work_;
     };
 
     using iterator = std::list<IosWorker>::iterator;
@@ -97,7 +94,7 @@ class IoServicePool : boost::noncopyable
             ios.Wait();
     }
 
-    boost::asio::io_service &GetIoService()
+    net::io_context &GetIoService()
     {
         auto current = next_io_service_++;
         if (ios_workers_.end() == next_io_service_)

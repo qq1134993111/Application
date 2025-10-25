@@ -266,5 +266,8 @@
     <ClInclude Include="net\TcpClient.h">
       <Filter>net</Filter>
     </ClInclude>
+    <ClInclude Include="net\detail\asio_compat.h">
+      <Filter>net\detail</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

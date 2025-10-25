@@ -19,7 +19,7 @@ private:
 	//virtual void OnSignal(int sig_num, int value) {}
 	virtual void OnExit() {}
 	std::string  config_path_;
-    boost::asio::io_service ios_;
+    net::io_context ios_;
     net::TcpClient client_{ios_};
 };
 

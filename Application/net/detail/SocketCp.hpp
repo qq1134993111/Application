@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include <boost/asio.hpp>
+#include "asio_compat.h"
 
 namespace net::detail
 {
@@ -17,7 +17,7 @@ namespace net::detail
 	public:
 		using socket_type = std::remove_cv_t<std::remove_reference_t<typename args_t::socket_t>>;
 
-		explicit SocketCp(boost::asio::io_context& ioc) : socket_(std::make_shared<socket_type>(ioc))
+		explicit SocketCp(net::io_context& ioc) : socket_(std::make_shared<socket_type>(ioc))
 		{
 		}
 
@@ -65,7 +65,7 @@ namespace net::detail
 			{
 				return this->socket_->lowest_layer().local_endpoint().address().to_string();
 			}
-			catch (const boost::system::system_error& e)
+			catch (const net::system_error& e)
 			{
 			}
 			return std::string();
@@ -79,7 +79,7 @@ namespace net::detail
 
 		inline unsigned short GetLocalPort() const noexcept
 		{
-			boost::system::error_code ec;
+			net::error_code ec;
 			return this->socket_->lowest_layer().local_endpoint(ec).port();
 		}
 
@@ -94,21 +94,21 @@ namespace net::detail
 			{
 				return this->socket_->lowest_layer().remote_endpoint().address().to_string();
 			}
-			catch (const boost::system::system_error& e)
+			catch (const net::system_error& e)
 			{
 
 			}
 
 			try
 			{
-				boost::asio::ip::address addr = this->remote_endpoint_.address();
+				net::ip::address addr = this->remote_endpoint_.address();
 
 				if (!addr.is_unspecified())
 				{
 					return addr.to_string();
 				}
 			}
-			catch (const boost::system::system_error&)
+			catch (const net::system_error&)
 			{
 			}
 
@@ -127,7 +127,7 @@ namespace net::detail
 			{
 				return this->socket_->lowest_layer().remote_endpoint().port();
 			}
-			catch (const boost::system::system_error& e)
+			catch (const net::system_error& e)
 			{
 
 			}
@@ -136,7 +136,7 @@ namespace net::detail
 			{
 				return this->remote_endpoint_.port();
 			}
-			catch (const  boost::system::system_error&)
+			catch (const net::system_error&)
 			{
 			}
 
@@ -148,16 +148,16 @@ namespace net::detail
 
 		inline derived_t& SetSndBufSize(int val) noexcept
 		{
-			boost::system::error_code ec;
-			this->socket_->lowest_layer().set_option(boost::asio::socket_base::send_buffer_size(val), ec);
+			net::error_code ec;
+			this->socket_->lowest_layer().set_option(net::socket_base::send_buffer_size(val), ec);
 			return (static_cast<derived_t&>(*this));
 		}
 
 
 		inline int GetSndBufSize() const noexcept
 		{
-			boost::system::error_code ec;
-			boost::asio::socket_base::send_buffer_size option{};
+			net::error_code ec;
+			net::socket_base::send_buffer_size option{};
 			this->socket_->lowest_layer().get_option(option, ec);
 			return option.value();
 		}
@@ -165,16 +165,16 @@ namespace net::detail
 
 		inline derived_t& SetRcvBufSize(int val) noexcept
 		{
-			boost::system::error_code ec;
-			this->socket_->lowest_layer().set_option(boost::asio::socket_base::receive_buffer_size(val), ec);
+			net::error_code ec;
+			this->socket_->lowest_layer().set_option(net::socket_base::receive_buffer_size(val), ec);
 			return (static_cast<derived_t&>(*this));
 		}
 
 
 		inline int GetRcvBufSize() const noexcept
 		{
-			boost::system::error_code ec;
-			boost::asio::socket_base::receive_buffer_size option{};
+			net::error_code ec;
+			net::socket_base::receive_buffer_size option{};
 			this->socket_->lowest_layer().get_option(option, ec);
 			return option.value();
 		}
@@ -188,16 +188,16 @@ namespace net::detail
 
 		inline derived_t& SetKeepAlive(bool val) noexcept
 		{
-			boost::system::error_code ec;
-			this->socket_->lowest_layer().set_option(boost::asio::socket_base::keep_alive(val), ec);
+			net::error_code ec;
+			this->socket_->lowest_layer().set_option(net::socket_base::keep_alive(val), ec);
 			return (static_cast<derived_t&>(*this));
 		}
 
 
 		inline bool IsKeepAlive() const noexcept
 		{
-			boost::system::error_code ec;
-			boost::asio::socket_base::keep_alive option{};
+			net::error_code ec;
+			net::socket_base::keep_alive option{};
 			this->socket_->lowest_layer().get_option(option, ec);
 			return option.value();
 		}
@@ -211,15 +211,15 @@ namespace net::detail
 
 		inline derived_t& SetReuseAddress(bool val) noexcept
 		{
-			boost::system::error_code ec;
-			this->socket_->lowest_layer().set_option(boost::asio::socket_base::reuse_address(val), ec);
+			net::error_code ec;
+			this->socket_->lowest_layer().set_option(net::socket_base::reuse_address(val), ec);
 			return (static_cast<derived_t&>(*this));
 		}
 
 		inline bool IsReuseAddress() const noexcept
 		{
-			boost::system::error_code ec;
-			boost::asio::socket_base::reuse_address option{};
+			net::error_code ec;
+			net::socket_base::reuse_address option{};
 			this->socket_->lowest_layer().get_option(option, ec);
 			return option.value();
 		}
@@ -233,31 +233,31 @@ namespace net::detail
 
 		inline derived_t& SetNoDelay(bool val) noexcept
 		{
-			boost::system::error_code ec;
-			this->socket_->lowest_layer().set_option(boost::asio::ip::tcp::no_delay(val), ec);
+			net::error_code ec;
+			this->socket_->lowest_layer().set_option(net::ip::tcp::no_delay(val), ec);
 			return (static_cast<derived_t&>(*this));
 		}
 
 		inline bool IsNoDelay() const noexcept
 		{
-			boost::system::error_code ec;
-			boost::asio::ip::tcp::no_delay option{};
+			net::error_code ec;
+			net::ip::tcp::no_delay option{};
 			this->socket_->lowest_layer().get_option(option, ec);
 			return option.value();
 		}
 
 		inline derived_t& SetLinger(bool enable, int timeout) noexcept
 		{
-			boost::system::error_code ec;
-			this->socket_->lowest_layer().set_option(boost::asio::socket_base::linger(enable, timeout), ec);
+			net::error_code ec;
+			this->socket_->lowest_layer().set_option(net::socket_base::linger(enable, timeout), ec);
 			return (static_cast<derived_t&>(*this));
 		}
 
 
-		inline boost::asio::socket_base::linger GetLinger() const noexcept
+		inline net::socket_base::linger GetLinger() const noexcept
 		{
-			boost::system::error_code ec;
-			boost::asio::socket_base::linger option{};
+			net::error_code ec;
+			net::socket_base::linger option{};
 			this->socket_->lowest_layer().get_option(option, ec);
 			return option;
 		}

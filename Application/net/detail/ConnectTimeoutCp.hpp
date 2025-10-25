@@ -2,7 +2,7 @@
 #include <atomic>
 #include <memory>
 
-#include "boost/asio.hpp"
+#include "asio_compat.h"
 
 namespace net::detail
 {
@@ -37,13 +37,13 @@ template <class derived_t, class args_t> class ConnectTimeoutCp
         if (check_connect_timeout_timer_ == nullptr)
         {
             auto &derived = static_cast<derived_t &>(*this);
-            check_connect_timeout_timer_ = std::make_shared<boost::asio::steady_timer>(derived.GetIoService());
+            check_connect_timeout_timer_ = std::make_shared<net::steady_timer>(derived.GetIoService());
         }
 
-        check_connect_timeout_timer_->expires_from_now(std::chrono::seconds(connect_timeout_seconds_));
+        set_timer_expires_from_now(*check_connect_timeout_timer_, std::chrono::seconds(connect_timeout_seconds_));
 
         check_connect_timeout_timer_->async_wait(
-            [this, this_ptr = std::move(this_ptr)](boost::system::error_code const &ec) {
+            [this, this_ptr = std::move(this_ptr)](net::error_code const &ec) {
                 if (connect_timeout_canceled_)
                     return;
                 HandleConnectTimeoutTimer(ec);
@@ -53,12 +53,18 @@ template <class derived_t, class args_t> class ConnectTimeoutCp
     size_t DoCancelConnectTimeoutTimer()
     {
         connect_timeout_canceled_ = true;
-        boost::system::error_code ignored_ec;
 
         size_t size = 0;
         if (check_connect_timeout_timer_!=nullptr)
         {
-            check_connect_timeout_timer_->cancel(ignored_ec);
+            try
+            {
+                size = check_connect_timeout_timer_->cancel();
+            }
+            catch (const net::system_error& e)
+            {
+
+            }
 
             // printf("FILE:%s,FUNCTION:%s,LINE:%d, %d canceled,%d,%s\n", __FILE__, __FUNCTION__, __LINE__, size,
             //        ignored_ec.value(), boost::system::system_error(ignored_ec).what());
@@ -67,7 +73,7 @@ template <class derived_t, class args_t> class ConnectTimeoutCp
     }
 
   protected:
-    void HandleConnectTimeoutTimer(boost::system::error_code const &ec)
+    void HandleConnectTimeoutTimer(net::error_code const &ec)
     {
         // printf("FILE:%s,FUNCTION:%s,LINE:%d,%d,%s\n", __FILE__, __FUNCTION__, __LINE__, ec.value(),
         //        boost::system::system_error(ec).what());
@@ -80,7 +86,7 @@ template <class derived_t, class args_t> class ConnectTimeoutCp
         }
         else
         {
-            BOOST_ASSERT(ec == boost::asio::error::operation_aborted);
+            BOOST_ASSERT(ec == net::error::operation_aborted);
         }
     }
 
@@ -94,7 +100,7 @@ template <class derived_t, class args_t> class ConnectTimeoutCp
     }
 
     std::atomic<uint32_t> connect_timeout_seconds_ = {0};
-    std::shared_ptr<boost::asio::steady_timer> check_connect_timeout_timer_;
+    std::shared_ptr<net::steady_timer> check_connect_timeout_timer_;
     std::atomic<bool> connect_timeout_finished_;
     std::atomic<bool> connect_timeout_canceled_;
 };

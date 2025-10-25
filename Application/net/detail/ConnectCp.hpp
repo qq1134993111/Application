@@ -1,5 +1,5 @@
 #pragma once
-#include "boost/asio.hpp"
+#include "asio_compat.h"
 
 namespace net::detail
 {
@@ -13,20 +13,20 @@ namespace net::detail
 
     protected:
         // 连接单个 endpoint
-        bool DoConnect(boost::asio::ip::tcp::endpoint endpoint)
+        bool DoConnect(net::ip::tcp::endpoint endpoint)
         {
             auto& derived = static_cast<derived_t&>(*this);
             connect_endpoint_ = endpoint;
             derived.Socket().async_connect(
                 endpoint,
-                [this, self = derived.SelfPtr()](const boost::system::error_code& ec) {
+                [this, self = derived.SelfPtr()](const net::error_code& ec) {
                     HandleConnect(ec);
                 });
             return true;
         }
 
         // 连接 resolver::results_type（多个候选地址）
-        bool DoConnect(boost::asio::ip::tcp::resolver::results_type results)
+        bool DoConnect(net::ip::tcp::resolver::results_type results)
         {
             auto& derived = static_cast<derived_t&>(*this);
             results_ = std::move(results);
@@ -35,7 +35,7 @@ namespace net::detail
             return true;
         }
 
-        boost::asio::ip::tcp::endpoint GetConnectEndpoint() const
+        net::ip::tcp::endpoint GetConnectEndpoint() const
         {
             return connect_endpoint_;
         }
@@ -48,15 +48,14 @@ namespace net::detail
             if (current_it_ == results_.end())
             {
                 // 所有地址都失败
-                derived._DoneConnectionFailure(
-                    boost::asio::error::host_unreachable);
+                derived._DoneConnectionFailure(net::error::host_unreachable);
                 return;
             }
 
             connect_endpoint_ = current_it_->endpoint();
             derived.Socket().async_connect(
                 connect_endpoint_,
-                [this, self = derived.SelfPtr()](const boost::system::error_code& ec) {
+                [this, self = derived.SelfPtr()](const net::error_code& ec) {
                     if (!ec)
                     {
                         HandleConnect(ec);
@@ -70,7 +69,7 @@ namespace net::detail
                 });
         }
 
-        void HandleConnect(const boost::system::error_code& ec)
+        void HandleConnect(const net::error_code& ec)
         {
             auto& derived = static_cast<derived_t&>(*this);
             if (!ec)
@@ -84,9 +83,9 @@ namespace net::detail
         }
 
     private:
-        boost::asio::ip::tcp::endpoint connect_endpoint_;
-        boost::asio::ip::tcp::resolver::results_type results_;
-        boost::asio::ip::tcp::resolver::results_type::iterator current_it_;
+        net::ip::tcp::endpoint connect_endpoint_;
+        net::ip::tcp::resolver::results_type results_;
+        net::ip::tcp::resolver::results_type::iterator current_it_;
     };
 
 } // namespace net::detail

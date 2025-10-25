@@ -1,8 +1,7 @@
 #pragma once
 #include <atomic>
 #include <memory>
-
-#include "boost/asio.hpp"
+#include "asio_compat.h"
 
 namespace net::detail
 {
@@ -42,14 +41,13 @@ template <class derived_t, class args_t> class RecvTimerCp
         if (check_recv_timeout_timer_ == nullptr)
         {
             auto &derived = static_cast<derived_t &>(*this);
-            check_recv_timeout_timer_ = std::make_shared<boost::asio::steady_timer>(derived.GetIoService());
+            check_recv_timeout_timer_ = std::make_shared<net::steady_timer>(derived.GetIoService());
         }
 
-        check_recv_timeout_timer_->expires_from_now(std::chrono::seconds(recv_timeout_seconds_));
-
+        set_timer_expires_from_now(*check_recv_timeout_timer_, std::chrono::seconds(recv_timeout_seconds_));
         check_recv_timeout_timer_->async_wait(
             [this, this_ptr = std::move(this_ptr),
-             this_canceld = recv_timer_canceled_ptr_](boost::system::error_code const &ec) {
+             this_canceld = recv_timer_canceled_ptr_](net::error_code const &ec) {
                 if (*this_canceld)
                 {
                     return;
@@ -68,11 +66,16 @@ template <class derived_t, class args_t> class RecvTimerCp
 
         size_t size = 0;
 
-        boost::system::error_code ignored_ec;
-
         if (check_recv_timeout_timer_!=nullptr)
         {
-            check_recv_timeout_timer_->cancel(ignored_ec);
+            try
+            {
+                size = check_recv_timeout_timer_->cancel();
+            }
+            catch (const boost::system::system_error& e)
+            {
+
+            }
 
             // printf("FILE:%s,FUNCTION:%s,LINE:%d, %d canceled,%d,%s\n", __FILE__, __FUNCTION__, __LINE__, size,
             //        ignored_ec.value(), boost::system::system_error(ignored_ec).what());
@@ -82,7 +85,7 @@ template <class derived_t, class args_t> class RecvTimerCp
     }
 
   protected:
-    void HandleRecvTimerTimeout(boost::system::error_code const &ec)
+    void HandleRecvTimerTimeout(net::error_code const &ec)
     {
         // printf("FILE:%s,FUNCTION:%s,LINE:%d,%d,%s\n", __FILE__, __FUNCTION__, __LINE__, ec.value(),
         //        boost::system::system_error(ec).what());
@@ -95,7 +98,7 @@ template <class derived_t, class args_t> class RecvTimerCp
         }
         else
         {
-            BOOST_ASSERT(ec == boost::asio::error::operation_aborted);
+            BOOST_ASSERT(ec == net::error::operation_aborted);
         }
     }
 
@@ -113,7 +116,7 @@ template <class derived_t, class args_t> class RecvTimerCp
     }
 
     std::atomic<uint32_t> recv_timeout_seconds_{0};
-    std::shared_ptr<boost::asio::steady_timer> check_recv_timeout_timer_;
+    std::shared_ptr<net::steady_timer> check_recv_timeout_timer_;
     bool recv_timer_finished_;
     std::shared_ptr<bool> recv_timer_canceled_ptr_;
 };

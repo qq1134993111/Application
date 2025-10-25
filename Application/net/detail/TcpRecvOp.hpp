@@ -2,7 +2,7 @@
 
 namespace net::detail
 {
-using buffer_iterator = boost::asio::buffers_iterator<boost::asio::streambuf::const_buffers_type>;
+using buffer_iterator =  net::buffers_iterator<net::streambuf::const_buffers_type>;
 using MatchRole = std::function<std::pair<buffer_iterator, bool>(buffer_iterator begin, buffer_iterator end)>;
 
 template <class derived_t, class args_t> class TcpRecvOp
@@ -28,15 +28,15 @@ template <class derived_t, class args_t> class TcpRecvOp
         if (match_role_)
         {
 
-            boost::asio::async_read_until(derived.Socket(), derived.Buffer(), match_role_,
-                                          [this, this_ptr = derived.SelfPtr()](boost::system::error_code ec,
+            net::async_read_until(derived.Socket(), derived.Buffer(), match_role_,
+                                          [this, this_ptr = derived.SelfPtr()](net::error_code ec,
                                                                                std::size_t bytes_transferred) mutable {
                                               this->HandleTcpRecv(ec, bytes_transferred, std::move(this_ptr));
                                           });
         }
         else
         {
-            boost::asio::async_read(derived.Socket(), derived.Buffer(), boost::asio::transfer_at_least(1),
+            net::async_read(derived.Socket(), derived.Buffer(), net::transfer_at_least(1),
                                     [this, this_ptr = std::move(this_ptr)](boost::system::error_code ec,
                                                                            std::size_t bytes_transferred) mutable {
                                         this->HandleTcpRecv(ec, bytes_transferred, std::move(this_ptr));
@@ -45,7 +45,7 @@ template <class derived_t, class args_t> class TcpRecvOp
     }
 
   private:
-    void HandleTcpRecv(const boost::system::error_code &ec, std::size_t bytes_transferred,
+    void HandleTcpRecv(const net::error_code &ec, std::size_t bytes_transferred,
                        std::shared_ptr<derived_t> this_ptr)
     {
         derived_t &derived = static_cast<derived_t &>(*this);

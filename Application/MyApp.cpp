@@ -37,7 +37,7 @@ int32_t MyApp::OnInit()
 
 
     std::thread([this]() {
-        boost::asio::io_service::work w(ios_);
+		auto guard=net::make_work_guard(ios_);
 		ios_.run();
         std::cout << "run end\n";
 		}).detach();

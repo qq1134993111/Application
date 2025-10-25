@@ -34,7 +34,7 @@ template <class derived_t, class args_t> class TcpSendOp
 
         if (!write_in_progress)
         {
-            derived.GetIoService().dispatch([this, this_ptr = derived.SelfPtr()]() {
+           net::dispatch(derived.GetIoService(),[this, this_ptr = derived.SelfPtr()]() {
                 auto &derived = static_cast<derived_t &>(*this);
                 if (!derived.IsConnected())
                     return;
@@ -55,14 +55,14 @@ template <class derived_t, class args_t> class TcpSendOp
     {
         auto &derived = static_cast<derived_t &>(*this);
 
-        boost::asio::async_write(
-            derived.Socket(), boost::asio::buffer(deq_send_messages_.front()),
-            [this, this_ptr = std::move(this_ptr)](const boost::system::error_code &ec, std::size_t size) {
+        net::async_write(
+            derived.Socket(), net::buffer(deq_send_messages_.front()),
+            [this, this_ptr = std::move(this_ptr)](const net::error_code &ec, std::size_t size) {
                 HandleWrite(ec, std::move(this_ptr));
             });
     }
 
-    void HandleWrite(const boost::system::error_code &ec, std::shared_ptr<derived_t> this_ptr)
+    void HandleWrite(const net::error_code &ec, std::shared_ptr<derived_t> this_ptr)
     {
         auto &derived = static_cast<derived_t &>(*this);
 

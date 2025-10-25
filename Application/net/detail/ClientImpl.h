@@ -16,7 +16,7 @@
 #include "ThisThreadIdCp.hpp"
 #include "UserDataCp.hpp"
 
-#include "boost/asio.hpp"
+//#include "boost/asio.hpp"
 
 namespace net::detail
 {
@@ -27,8 +27,8 @@ struct template_args_tcp_client
     // static constexpr bool is_client = true;
     // static constexpr bool is_server = false;
 
-    using socket_t = boost::asio::ip::tcp::socket;
-    using buffer_t = boost::asio::streambuf;
+    using socket_t = net::ip::tcp::socket;
+    using buffer_t = net::streambuf;
     // using send_data_t = std::string_view;
     // using recv_data_t = std::string_view;
 };
@@ -67,7 +67,7 @@ class ClientImpl : public Object_t<derived_t>,
     using key_type = std::size_t;
     using buffer_type = typename args_t::buffer_t;
 
-    ClientImpl(boost::asio::io_service &ios)
+    ClientImpl(net::io_context &ios)
         : Object_t<derived_t>(), IoServiceCp<derived_t, args_t>(ios),
           SocketCp<derived_t, args_t>(IoServiceCp<derived_t, args_t>::GetIoService()), ConnectCp<derived_t, args_t>(),
           ConnectTimeoutCp<derived_t, args_t>(), ReconnectTimerCp<derived_t, args_t>(),
@@ -85,13 +85,13 @@ class ClientImpl : public Object_t<derived_t>,
     bool Connect(const std::string &ip, unsigned short port)
     {
         boost::system::error_code ec;
-        auto ip_address = boost::asio::ip::address::from_string(ip, ec);
+        auto ip_address = net::make_address_compat(ip, ec);
         if (ec)
         {
             return false;
         }
 
-        boost::asio::ip::tcp::endpoint connect_endpoint(ip_address, port);
+        net::ip::tcp::endpoint connect_endpoint(ip_address, port);
 
         auto &derived = this->Derived();
         State_t expected = State_t::stopped;
@@ -102,13 +102,13 @@ class ClientImpl : public Object_t<derived_t>,
 
         auto self_ptr = this->Derived().SelfPtr();
         auto &ios = derived.GetIoService();
-        ios.post([this, self_ptr]() {
+        net::post(ios,[this, self_ptr]() {
             this->DoInitThisThreadId();
             this->stopped_ = false;
             this->Listener().Notify(EventType::init);
         });
 
-        ios.post([this, self_ptr, connect_endpoint = std::move(connect_endpoint)]() {
+        net::post(ios,[this, self_ptr, connect_endpoint = std::move(connect_endpoint)]() {
             State_t expected = State_t::connecting;
             if (this->state_.compare_exchange_strong(expected, State_t::connecting))
             {
@@ -149,7 +149,7 @@ class ClientImpl : public Object_t<derived_t>,
 
         if (only_close)
         {
-            this->Derived().GetService().post([this, self_ptr]() mutable {
+            net::post(this->Derived().GetService(),[this, self_ptr]() mutable {
                 if (this->state_ == State_t::stopping || this->state_ == State_t::stopped)
                     return;
                 this->DoShutdown(); 
@@ -157,7 +157,7 @@ class ClientImpl : public Object_t<derived_t>,
             return;
         }
 
-        this->Derived().GetIoService().post([this, self_ptr]() mutable {
+        net::post(this->Derived().GetService(),[this, self_ptr]() mutable {
             if (this->state_ == State_t::stopping || this->state_ == State_t::stopped)
                 return;
 
@@ -281,7 +281,7 @@ class ClientImpl : public Object_t<derived_t>,
 
         if (this->IsConnectTimeoutTimerFinished())
         {
-            ec = boost::asio::error::timed_out;
+            ec = net::error::timed_out;
         }
 
         this->DoCancelConnectTimeoutTimer();
@@ -316,7 +316,7 @@ class ClientImpl : public Object_t<derived_t>,
         }
         this->state_ = State_t::connecting;
       
-        this->Derived().GetIoService().post([this, self_ptr = this->Derived().SelfPtr()]() mutable {
+        net::post(this->Derived().GetIoService(),[this, self_ptr = this->Derived().SelfPtr()]() mutable {
             auto ep = this->GetConnectEndpoint();
             this->DoConnect(ep);
         });
@@ -324,10 +324,10 @@ class ClientImpl : public Object_t<derived_t>,
 
     void _DoneRecvTimerTimeout()
     {
-        _DoneDisConnect(boost::asio::error::timed_out);
+        _DoneDisConnect(net::error::timed_out);
     }
 
-    void _DoneDisConnect(boost::system::error_code ec)
+    void _DoneDisConnect(net::error_code ec)
     {
         auto &derived = this->Derived();
 

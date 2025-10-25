@@ -1,8 +1,7 @@
 #pragma once
 #include <atomic>
 #include <memory>
-
-#include "boost/asio.hpp"
+#include "asio_compat.h"
 
 namespace net::detail
 {
@@ -51,14 +50,14 @@ template <class derived_t, class args_t> class HeartbeatTimerCp
         if (check_heartbeat_timer_ == nullptr)
         {
             auto &derived = static_cast<derived_t &>(*this);
-            check_heartbeat_timer_ = std::make_shared<boost::asio::steady_timer>(derived.GetIoService());
+            check_heartbeat_timer_ = std::make_shared<net::steady_timer>(derived.GetIoService());
         }
 
-        check_heartbeat_timer_->expires_from_now(std::chrono::seconds(heartbeat_seconds_));
+        set_timer_expires_from_now(*check_heartbeat_timer_, std::chrono::seconds(heartbeat_seconds_));
 
         check_heartbeat_timer_->async_wait(
             [this, this_ptr = std::move(this_ptr),
-             this_canceled = heartbeat_timer_canceled_ptr_](boost::system::error_code const &ec) {
+             this_canceled = heartbeat_timer_canceled_ptr_](net::error_code const &ec) {
                 if (*this_canceled)
                 {
                     return;
@@ -74,12 +73,18 @@ template <class derived_t, class args_t> class HeartbeatTimerCp
             *heartbeat_timer_canceled_ptr_ = true;
         }
 
-        boost::system::error_code ignored_ec;
-
+     
         size_t size = 0;
         if (check_heartbeat_timer_ != nullptr)
         {
-            check_heartbeat_timer_->cancel(ignored_ec);
+            try
+            {
+                size = check_heartbeat_timer_->cancel();
+            }
+            catch (const net::system_error& e)
+            {
+
+            }
 
             // printf("FILE:%s,FUNCTION:%s,LINE:%d, %d canceled,%d,%s\n", __FILE__, __FUNCTION__, __LINE__, size,
             //        ignored_ec.value(), boost::system::system_error(ignored_ec).what());
@@ -88,7 +93,7 @@ template <class derived_t, class args_t> class HeartbeatTimerCp
     }
 
   protected:
-    void HandleHeartbeatTimerTimeout(boost::system::error_code const &ec)
+    void HandleHeartbeatTimerTimeout(net::error_code const &ec)
     {
         // printf("FILE:%s,FUNCTION:%s,LINE:%d,%d,%s\n", __FILE__, __FUNCTION__, __LINE__, ec.value(),
         //        boost::system::system_error(ec).what());
@@ -101,7 +106,7 @@ template <class derived_t, class args_t> class HeartbeatTimerCp
         }
         else
         {
-            BOOST_ASSERT(ec == boost::asio::error::operation_aborted);
+            BOOST_ASSERT(ec == net::error::operation_aborted);
         }
     }
 
@@ -134,7 +139,7 @@ template <class derived_t, class args_t> class HeartbeatTimerCp
 
     std::atomic<uint32_t> heartbeat_seconds_{0};
     HeartbeartInfoFunc get_heartbeat_info_func_;
-    std::shared_ptr<boost::asio::steady_timer> check_heartbeat_timer_;
+    std::shared_ptr<net::steady_timer> check_heartbeat_timer_;
     bool heartbeat_timer_finished_;
     std::shared_ptr<bool> heartbeat_timer_canceled_ptr_;
 };

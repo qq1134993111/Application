@@ -7,18 +7,18 @@ namespace net::detail
 template <class derived_t, class args_t> class IoServiceCp
 {
   public:
-    IoServiceCp(boost::asio::io_service &ios) : ios_(ios)
+    IoServiceCp(net::io_context&ios) : ios_(ios)
     {
     }
 
   protected:
-    boost::asio::io_service &GetIoService()
+    net::io_context& GetIoService()
     {
         return ios_;
     }
 
   protected:
-    boost::asio::io_service &ios_;
+    net::io_context&ios_;
 };
 
 } // namespace net::detail

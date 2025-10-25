@@ -11,13 +11,13 @@ namespace net::detail
 
 	protected:
 		void DoShutdown(
-			const boost::asio::socket_base::shutdown_type& what = boost::asio::ip::tcp::socket::shutdown_both,
-			const boost::system::error_code& ec = boost::asio::error::operation_aborted)
+			const net::socket_base::shutdown_type& what = net::ip::tcp::socket::shutdown_both,
+			const net::error_code& ec = net::error::operation_aborted)
 		{
             auto &derived = static_cast<derived_t &>(*this);
 
-            boost::system::error_code ignored_ec;
-            derived.Socket().shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
+            net::error_code ignored_ec;
+            derived.Socket().shutdown(net::ip::tcp::socket::shutdown_both, ignored_ec);
 		}
 
 	public:
