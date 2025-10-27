@@ -49,6 +49,7 @@ namespace net {
     using error_code = asio::error_code;
     namespace error = asio::error;
 
+    using asio::async_connect;
     using asio::async_read;
     using asio::async_read_until;
     using asio::async_write;
@@ -105,6 +106,7 @@ namespace net {
     using error_code = boost::system::error_code;
     namespace error = boost::asio::error;
 
+    using boost::asio::async_connect;
     using boost::asio::async_read;
     using boost::asio::async_read_until;
     using boost::asio::async_write;

@@ -29,13 +29,9 @@ namespace net::detail
         bool DoConnect(net::ip::tcp::resolver::results_type results)
         {
             auto& derived = static_cast<derived_t&>(*this);
-            net::async_connect(derived.Socket(),
-                results,
-                [this, self = derived.SelfPtr()](const net::error_code& ec,const net::tcp::endpoint& endpoint) {
-
-                    connect_endpoint_ = endpoint;
-                    HandleConnect(ec);
-                });
+            results_ = std::move(results);
+            current_it_ = results_.begin();
+            TryNextEndpoint();
             return true;
         }
 
@@ -45,6 +41,34 @@ namespace net::detail
         }
 
     private:
+        void TryNextEndpoint()
+        {
+            auto& derived = static_cast<derived_t&>(*this);
+
+            if (current_it_ == results_.end())
+            {
+                // 所有地址都失败
+                derived._DoneConnectionFailure(net::error::host_unreachable);
+                return;
+            }
+
+            connect_endpoint_ = current_it_->endpoint();
+            derived.Socket().async_connect(
+                connect_endpoint_,
+                [this, self = derived.SelfPtr()](const net::error_code& ec) {
+                    if (!ec)
+                    {
+                        HandleConnect(ec);
+                    }
+                    else
+                    {
+                        // 尝试下一个地址
+                        ++current_it_;
+                        TryNextEndpoint();
+                    }
+                });
+        }
+
         void HandleConnect(const net::error_code& ec)
         {
             auto& derived = static_cast<derived_t&>(*this);
